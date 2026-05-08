@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Injected by layout.tsx from EVENT.theme — defaults here are mint + gold */
+    --primary: 153 35% 57%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 42 56% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    --gold: 42 56% 55%;
+    --mint: 153 35% 57%;
+
+    --background: 150 30% 98%;
+    --foreground: 150 10% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 10% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 10% 15%;
+
+    --muted: 150 20% 94%;
+    --muted-foreground: 150 10% 45%;
+
+    --accent: 42 56% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 20% 88%;
+    --input: 150 20% 88%;
+    --ring: 153 35% 57%;
+
+    --radius: 0.625rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Hide scrollbar visually while keeping scroll functional */
+  html, body {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE / Edge */
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;                /* Chrome / Safari / Opera */
+  }
+
+  /* No dark mode per spec */
+  :root {
+    color-scheme: light;
+  }
+}
+
+@layer utilities {
+  /* Gold shimmer text effect */
+  .text-gold-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--gold)),
+      hsl(42 70% 70%),
+      hsl(var(--gold))
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Script font shorthand */
+  .font-script {
+    font-family: var(--font-script), cursive;
+  }
+
+  /* Section spacing */
+  .section-padding {
+    @apply py-16 md:py-24 px-4 md:px-8;
+  }
+}
