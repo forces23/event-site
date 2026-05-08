@@ -20,16 +20,16 @@ if (!MONGODB_URI) {
 // ─── CHANGE THESE BEFORE RUNNING ─────────────────────────────────────────────
 const USERS = [
   {
-    username: "admin",
-    email: "bobby.lawson17@gmail.com",
-    password: "admin2026!",
+    username: process.env.ADMIN_USERNAME ,
+    email: process.env.ADMIN_EMAIL,
+    password: process.env.ADMIN_PASSWORD,
     name: "Admin",
     role: "admin" as const,
   },
   {
-    username: "alexa",
-    email: "alexa@quince.local",
-    password: "quince72426!",
+    username: process.env.VIEWER_USERNAME,
+    email: process.env.VIEWER_EMAIL,
+    password: process.env.VIEWER_PASSWORD,
     name: "Viewer",
     role: "user" as const,   // Better Auth admin plugin uses "user" for non-admin roles
   },
@@ -50,7 +50,7 @@ async function seed() {
     try {
       // Create user via Better Auth's email sign-up (works with username plugin)
       const result = await auth.api.signUpEmail({
-        body: { email: u.email, password: u.password, name: u.name },
+        body: { email: u.email!, password: u.password!, name: u.name },
         headers: new Headers(),
       });
 
