@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { getPresignedPutUrl, getPublicUrl } from "@/lib/r2";
+import { connectDB } from "@/lib/db";
+import Settings from "@/models/Settings";
 import { EVENT } from "@/config/alexa";
 import type { PresignRequest, PresignResponse } from "@/types";
 
@@ -20,6 +22,15 @@ const MAX_VIDEOS = 5;
 
 export async function POST(req: NextRequest) {
   try {
+    await connectDB();
+    const settings = await Settings.findOne({ event: EVENT.id }).lean();
+    if ((settings as { upload_locked?: boolean } | null)?.upload_locked) {
+      return NextResponse.json(
+        { error: "Uploads are currently closed. Check back soon!" },
+        { status: 423 }
+      );
+    }
+
     const { files } = (await req.json()) as { files: PresignRequest[] };
 
     if (!Array.isArray(files) || files.length === 0) {

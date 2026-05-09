@@ -12,6 +12,7 @@ import OverviewCards from "@/components/dashboard/OverviewCards";
 import RSVPTable from "@/components/dashboard/RSVPTable";
 import MessagesWall from "@/components/dashboard/MessagesWall";
 import PhotoGallery from "@/components/dashboard/PhotoGallery";
+import SettingsPanel from "@/components/dashboard/SettingsPanel";
 import { EVENT } from "@/config/alexa";
 import type { RsvpDocument, PhotoDocument, DashboardStats } from "@/types";
 
@@ -144,6 +145,7 @@ export default function DashboardPage() {
               <TabsTrigger value="rsvps">📋 RSVPs</TabsTrigger>
               <TabsTrigger value="messages">💌 Messages</TabsTrigger>
               <TabsTrigger value="photos">📷 Photos</TabsTrigger>
+              {isAdmin && <TabsTrigger value="settings">⚙️ Settings</TabsTrigger>}
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -177,6 +179,12 @@ export default function DashboardPage() {
                 onDelete={handlePhotoDelete}
               />
             </TabsContent>
+
+            {isAdmin && (
+              <TabsContent value="settings">
+                <SettingsPanel />
+              </TabsContent>
+            )}
           </Tabs>
         )}
       </div>
