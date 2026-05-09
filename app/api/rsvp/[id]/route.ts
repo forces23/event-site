@@ -4,8 +4,10 @@ import Rsvp from "@/models/RSVP";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   try {
     await connectDB();
 
@@ -37,7 +39,7 @@ export async function PATCH(
     const kids = status === "attending" ? Math.max(0, total_kids ?? 0) : 0;
 
     const updated = await Rsvp.findByIdAndUpdate(
-      params.id,
+      id,
       {
         $set: {
           "guest.name": name.trim(),
