@@ -5,7 +5,7 @@ import Rsvp from "@/models/RSVP";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session?.user) {
@@ -15,9 +15,11 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const { id } = await params;
+
   try {
     await connectDB();
-    await Rsvp.findByIdAndDelete(params.id);
+    await Rsvp.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[DELETE /api/dashboard/rsvps/:id]", err);

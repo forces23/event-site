@@ -6,7 +6,7 @@ import { deleteObject } from "@/lib/r2";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session?.user) {
@@ -16,10 +16,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const { id } = await params;
+
   try {
     await connectDB();
 
-    const photo = await Photo.findById(params.id);
+    const photo = await Photo.findById(id);
     if (!photo) {
       return NextResponse.json({ error: "Photo not found." }, { status: 404 });
     }

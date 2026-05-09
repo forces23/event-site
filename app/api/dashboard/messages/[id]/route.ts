@@ -5,7 +5,7 @@ import Rsvp from "@/models/RSVP";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session?.user) {
@@ -15,10 +15,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const { id } = await params;
+
   try {
     await connectDB();
 
-    await Rsvp.findByIdAndUpdate(params.id, {
+    await Rsvp.findByIdAndUpdate(id, {
       $set: { "message.msg": "", "message.is_public": false },
     });
 
