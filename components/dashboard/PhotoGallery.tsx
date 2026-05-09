@@ -25,9 +25,10 @@ async function downloadFile(url: string, name: string) {
 }
 
 export default function PhotoGallery({ photos, isAdmin, onDelete }: PhotoGalleryProps) {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [deleting, setDeleting] = useState<string | null>(null);
-  const [downloading, setDownloading] = useState(false);
+  const [selected, setSelected]         = useState<Set<string>>(new Set());
+  const [deleting, setDeleting]         = useState<string | null>(null);
+  const [deletingBulk, setDeletingBulk] = useState(false);
+  const [downloading, setDownloading]   = useState(false);
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => {
@@ -55,6 +56,27 @@ export default function PhotoGallery({ photos, isAdmin, onDelete }: PhotoGallery
     } finally {
       setDeleting(null);
     }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (!confirm(`Delete ${selected.size} photo${selected.size > 1 ? "s" : ""}? This cannot be undone.`)) return;
+    setDeletingBulk(true);
+    const ids = Array.from(selected);
+    let failed = 0;
+    await Promise.all(
+      ids.map(async (id) => {
+        try {
+          await axios.delete(`/api/dashboard/photos/${id}`);
+          onDelete(id);
+        } catch {
+          failed++;
+        }
+      })
+    );
+    setSelected(new Set());
+    setDeletingBulk(false);
+    if (failed > 0) toast.error(`${failed} deletion${failed > 1 ? "s" : ""} failed.`);
+    else toast.success(`${ids.length} photo${ids.length > 1 ? "s" : ""} deleted.`);
   };
 
   const handleDownloadSelected = async () => {
@@ -108,10 +130,18 @@ export default function PhotoGallery({ photos, isAdmin, onDelete }: PhotoGallery
         </Button>
 
         {selected.size > 0 && (
-          <Button variant="outline" size="sm" onClick={handleDownloadSelected} disabled={downloading} className="gap-2">
-            <Download className="w-4 h-4" />
-            Download {selected.size} selected
-          </Button>
+          <>
+            <Button variant="outline" size="sm" onClick={handleDownloadSelected} disabled={downloading || deletingBulk} className="gap-2">
+              <Download className="w-4 h-4" />
+              Download {selected.size} selected
+            </Button>
+            {isAdmin && (
+              <Button variant="destructive" size="sm" onClick={handleDeleteSelected} disabled={deletingBulk || !!deleting} className="gap-2">
+                <Trash2 className="w-4 h-4" />
+                {deletingBulk ? "Deleting…" : `Delete ${selected.size} selected`}
+              </Button>
+            )}
+          </>
         )}
 
         <Button variant="outline" size="sm" onClick={handleDownloadAll} disabled={downloading} className="gap-2 ml-auto">

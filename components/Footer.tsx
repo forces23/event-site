@@ -53,7 +53,7 @@ export default function Footer({ name }: FooterProps) {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
               }}
             />
-            <p className="text-xs text-muted-foreground mt-2">/upload</p>
+            {/* <p className="text-xs text-muted-foreground mt-2">/upload</p> */}
           </div>
 
           <div className="mt-4">

@@ -206,7 +206,7 @@ export default function UploadForm() {
           <Button variant="outline" onClick={() => { setFiles([]); setAllDone(false); }}>
             Upload more
           </Button>
-          <Button onClick={() => window.location.href = "/#gallery"} className="gap-2">
+          <Button onClick={() => window.location.href = "/?tab=gallery&gallery=party#sections"} className="gap-2">
             <Images className="w-4 h-4" />
             View gallery
           </Button>

@@ -93,14 +93,9 @@ export default function GuestGallery({ eventId }: { eventId: string }) {
         </div>
 
         {/* Upload CTA */}
-        <div className="gg-upload-cta mb-8 p-6 rounded-2xl border border-dashed border-primary/30 bg-primary/5 text-center">
-          <Upload className="w-8 h-8 text-primary mx-auto mb-2" />
-          <p className="font-display font-semibold mb-1">Share your moments!</p>
-          <p className="text-sm text-muted-foreground mb-4">
-            Upload your photos and videos from the celebration
-          </p>
+        <div className="gg-upload-cta mb-8 text-center">
           <Link href="/upload">
-            <Button className="gap-2">
+            <Button variant="outline" className="gap-2">
               <Upload className="w-4 h-4" />
               Upload Photos &amp; Videos
             </Button>

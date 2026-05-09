@@ -3,40 +3,62 @@
 import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 
-export default function MusicPlayer({ src }: { src: string }) {
+const MUTE_KEY = "quince_music_muted";
+
+export default function MusicPlayer({ src, tapSignal }: { src: string; tapSignal?: boolean }) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted]       = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
 
+  // Autoplay on mount — skipped if user previously muted
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.loop = true;
+    audio.loop   = true;
     audio.volume = 0.4;
-    audio.muted = false;
 
-    // Try unmuted autoplay first
+    const savedMuted = localStorage.getItem(MUTE_KEY) === "true";
+
+    if (savedMuted) {
+      // Respect user's preference — don't start automatically
+      setIsMuted(true);
+      return;
+    }
+
+    audio.muted = false;
     audio
       .play()
-      .then(() => {
-        setHasStarted(true);
-        setIsMuted(false);
-      })
+      .then(() => { setHasStarted(true); setIsMuted(false); })
       .catch(() => {
-        // Browser blocked unmuted autoplay — fall back to muted
         audio.muted = true;
         audio
           .play()
-          .then(() => {
-            setHasStarted(true);
-            setIsMuted(true);
-          })
-          .catch(() => {
-            // Autoplay blocked entirely — user must tap the button
-          });
+          .then(() => { setHasStarted(true); setIsMuted(true); })
+          .catch(() => { /* fully blocked — wait for tap */ });
       });
   }, []);
+
+  // Envelope tap — guaranteed user gesture, fixes iOS Safari; respects saved preference
+  useEffect(() => {
+    if (!tapSignal) return;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const savedMuted = localStorage.getItem(MUTE_KEY) === "true";
+
+    if (!hasStarted) {
+      audio.muted = savedMuted;
+      audio
+        .play()
+        .then(() => { setHasStarted(true); setIsMuted(savedMuted); })
+        .catch(() => { /* still blocked */ });
+    } else if (!savedMuted) {
+      audio.muted = false;
+      setIsMuted(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tapSignal]);
 
   const handleToggle = async () => {
     const audio = audioRef.current;
@@ -48,15 +70,15 @@ export default function MusicPlayer({ src }: { src: string }) {
         await audio.play();
         setHasStarted(true);
         setIsMuted(false);
-      } catch {
-        // Still blocked
-      }
+        localStorage.setItem(MUTE_KEY, "false");
+      } catch { /* still blocked */ }
       return;
     }
 
     const next = !isMuted;
     audio.muted = next;
     setIsMuted(next);
+    localStorage.setItem(MUTE_KEY, String(next));
   };
 
   return (

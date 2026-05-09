@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import EventInfo   from "@/components/EventInfo";
 import Padrinos    from "@/components/Padrinos";
 import Court       from "@/components/Court";
@@ -10,15 +10,28 @@ import type { EventConfig } from "@/types";
 
 interface SectionTabsProps {
   event: EventConfig;
+  initialTab?: "details" | "gallery";
+  initialGalleryTab?: "alexa" | "party";
 }
 
 type MainTab    = "details" | "gallery";
 type GalleryTab = "alexa"   | "party";
 
-export default function SectionTabs({ event }: SectionTabsProps) {
-  const [mainTab,    setMainTab]    = useState<MainTab>("details");
-  const [galleryTab, setGalleryTab] = useState<GalleryTab>("alexa");
-  const barRef = useRef<HTMLDivElement>(null);
+export default function SectionTabs({ event, initialTab = "details", initialGalleryTab = "alexa" }: SectionTabsProps) {
+  const [mainTab,    setMainTab]    = useState<MainTab>(initialTab);
+  const [galleryTab, setGalleryTab] = useState<GalleryTab>(initialGalleryTab);
+  const barRef    = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Scroll tabs into view when arriving from the upload page
+  useEffect(() => {
+    if (initialTab === "gallery") {
+      setTimeout(() => {
+        sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const switchMain = (tab: MainTab) => {
     setMainTab(tab);
@@ -27,7 +40,7 @@ export default function SectionTabs({ event }: SectionTabsProps) {
   };
 
   return (
-    <div>
+    <div id="sections" ref={sectionRef}>
       {/* ── Main tab bar — sticks to top once hero scrolls past ──────────── */}
       <div
         ref={barRef}
