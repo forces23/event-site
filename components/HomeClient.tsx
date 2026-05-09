@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import dynamic from "next/dynamic";
-import MusicPlayer from "@/components/MusicPlayer";
+import MusicPlayer, { type MusicPlayerHandle } from "@/components/MusicPlayer";
 import { EVENT } from "@/config/alexa";
 
 const EnvelopeIntro = dynamic(() => import("@/components/EnvelopeIntro"), { ssr: false });
 
 export default function HomeClient() {
-  const [tapSignal, setTapSignal] = useState(false);
+  const musicRef = useRef<MusicPlayerHandle>(null);
 
   return (
     <>
       <EnvelopeIntro
         eventDate={EVENT.date}
-        onOpen={() => setTapSignal(true)}
+        onOpen={() => musicRef.current?.playWithGesture()}
       />
-      <MusicPlayer src={EVENT.music} tapSignal={tapSignal} />
+      <MusicPlayer ref={musicRef} src={EVENT.music} />
     </>
   );
 }
