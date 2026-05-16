@@ -84,8 +84,8 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
       {mainTab === "details" && (
         <>
           <EventInfo event={event} />
-          <Padrinos  padrinos={event.padrinos} />
-          <Court     damas={event.damas} chambelanes={event.chambelanes} />
+          {/* <Padrinos  padrinos={event.padrinos} /> */}
+          {/* <Court     damas={event.damas} chambelanes={event.chambelanes} /> */}
         </>
       )}
 
