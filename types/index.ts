@@ -106,6 +106,7 @@ export interface PhotoDocument {
   mime_type: string;
   size: number;
   type: "image" | "video";
+  category: "guest" | "her";
   created_at: string;
 }
 

@@ -8,6 +8,7 @@ export interface IPhoto extends Document {
   mime_type: string;
   size: number;
   type: "image" | "video";
+  category: "guest" | "her";
   created_at: Date;
 }
 
@@ -19,6 +20,7 @@ const PhotoSchema = new Schema<IPhoto>({
   mime_type: { type: String, required: true },
   size: { type: Number, required: true },
   type: { type: String, enum: ["image", "video"], required: true },
+  category: { type: String, enum: ["guest", "her"], default: "guest" },
   created_at: { type: Date, default: Date.now },
 });
 

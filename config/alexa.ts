@@ -1,5 +1,7 @@
 import type { EventConfig } from "@/types";
 
+export const R2_BUCKET = "quince-uploads";
+
 export const EVENT: EventConfig = {
   id: "alexa_quince_2026",
   name: "Alexa Hernandez",
