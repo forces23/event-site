@@ -4,15 +4,15 @@
 
 @layer base {
   :root {
-    /* Injected by layout.tsx from EVENT.theme — defaults here are mint + gold */
-    --primary: 153 35% 57%;
+    /* Injected by layout.tsx from EVENT.theme — defaults here are pink + gold */
+    --primary: 343 65% 68%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 42 56% 55%;
     --secondary-foreground: 0 0% 100%;
 
     --gold: 42 56% 55%;
-    --mint: 153 35% 57%;
+    --mint: 343 65% 68%;
 
     --background: 150 30% 98%;
     --foreground: 150 10% 15%;
@@ -34,7 +34,7 @@
 
     --border: 150 20% 88%;
     --input: 150 20% 88%;
-    --ring: 153 35% 57%;
+    --ring: 343 65% 68%;
 
     --radius: 0.625rem;
   }
@@ -68,6 +68,11 @@
   :root {
     color-scheme: light;
   }
+}
+
+@keyframes cloud-drift {
+  from { transform: translateX(110vw); }
+  to   { transform: translateX(calc(-100% - 120px)); }
 }
 
 @layer utilities {

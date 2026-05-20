@@ -21,9 +21,9 @@ export const EVENT: EventConfig = {
   },
 
   theme: {
-    // Mint green + gold — change these per sister
-    primaryColor: "#6db89a",
-    primaryColorHsl: "153 35% 57%",
+    // Pink + gold — change these per sister
+    primaryColor: "#e07898",
+    primaryColorHsl: "343 65% 68%",
     accentColor: "#c9a84c",
     accentColorHsl: "42 56% 55%",
     font: "Playfair Display",
@@ -34,7 +34,9 @@ export const EVENT: EventConfig = {
   music: "/music/song.mp3",
 
   // Set to a path string once the photo is ready, e.g. "/photos/alexa.jpg"
-  heroPhoto: "/photos/alexa-ai-1.png",
+  // heroPhoto: "/photos/alexa-ai-1.png",
+  heroPhoto: "/photos/floral-1.png",
+  heroPhotoMobile: "/photos/floral-mobile.png",
 
   padrinos: [
     { name: "[Family Name] Family", role: "Florals" },

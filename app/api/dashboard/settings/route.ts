@@ -13,9 +13,16 @@ export async function GET() {
 
   try {
     await connectDB();
-    const settings = await Settings.findOne({ event: EVENT.id }).lean();
+    const s = await Settings.findOne({ event: EVENT.id }).lean() as {
+      upload_locked?: boolean;
+      wishlist_enabled?: boolean;
+      registry_url?: string;
+    } | null;
+
     return NextResponse.json({
-      upload_locked: (settings as { upload_locked?: boolean } | null)?.upload_locked ?? false,
+      upload_locked:    s?.upload_locked    ?? false,
+      wishlist_enabled: s?.wishlist_enabled ?? true,
+      registry_url:     s?.registry_url     ?? "",
     });
   } catch (err) {
     console.error("[GET /api/dashboard/settings]", err);
@@ -28,19 +35,37 @@ export async function PATCH(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
-  if ((session.user as { role?: string })?.role !== "admin") {
+
+  const isAdmin = (session.user as { role?: string })?.role === "admin";
+  const body = await req.json() as Partial<{
+    upload_locked: boolean;
+    wishlist_enabled: boolean;
+    registry_url: string;
+  }>;
+
+  // Toggle fields require admin; registry_url can be updated by any logged-in user
+  if (("upload_locked" in body || "wishlist_enabled" in body) && !isAdmin) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
   try {
-    const { upload_locked } = (await req.json()) as { upload_locked: boolean };
     await connectDB();
-    const settings = await Settings.findOneAndUpdate(
+    const update: Record<string, unknown> = { updated_at: new Date() };
+    if ("upload_locked"    in body) update.upload_locked    = body.upload_locked;
+    if ("wishlist_enabled" in body) update.wishlist_enabled = body.wishlist_enabled;
+    if ("registry_url"     in body) update.registry_url     = body.registry_url;
+
+    const s = await Settings.findOneAndUpdate(
       { event: EVENT.id },
-      { upload_locked, updated_at: new Date() },
-      { upsert: true, new: true }
+      update,
+      { upsert: true, new: true },
     );
-    return NextResponse.json({ upload_locked: settings.upload_locked });
+
+    return NextResponse.json({
+      upload_locked:    s.upload_locked,
+      wishlist_enabled: s.wishlist_enabled,
+      registry_url:     s.registry_url,
+    });
   } catch (err) {
     console.error("[PATCH /api/dashboard/settings]", err);
     return NextResponse.json({ error: "Failed to update settings." }, { status: 500 });

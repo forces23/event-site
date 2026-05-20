@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, Clock, Navigation, CalendarDays, Shirt, Gift, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Countdown from "./Countdown";
@@ -13,6 +13,18 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import type { EventConfig } from "@/types";
 
 export default function EventInfo({ event }: { event: EventConfig }) {
+  const [wishlistEnabled, setWishlistEnabled] = useState(true);
+  const [registryUrl,     setRegistryUrl]     = useState(event.registry);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d: { wishlist_enabled: boolean; registry_url: string }) => {
+        setWishlistEnabled(d.wishlist_enabled);
+        setRegistryUrl(d.registry_url);
+      })
+      .catch(() => { /* fail open — defaults already set */ });
+  }, []);
   const sectionRef = useRef<HTMLElement>(null);
 
   const [directionsOpen, setDirectionsOpen] = useState(false);
@@ -212,25 +224,27 @@ export default function EventInfo({ event }: { event: EventConfig }) {
               </p>
             </div>
 
-            <div className="ei-detail-card p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
-                <Gift className="w-6 h-6 text-accent" />
+            {wishlistEnabled && (
+              <div className="ei-detail-card p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                  <Gift className="w-6 h-6 text-accent" />
+                </div>
+                <h3 className="font-display text-lg font-semibold mb-2">Gifts</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Your presence is the best gift of all! But if you&apos;d like to bring something,
+                  feel free to check the wishlist.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => window.open(registryUrl, "_blank", "noopener,noreferrer")}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View Wishlist
+                </Button>
               </div>
-              <h3 className="font-display text-lg font-semibold mb-2">Gifts</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Your presence is the best gift of all! But if you&apos;d like to bring something,
-                feel free to check the wishlist.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => window.open(event.registry, "_blank", "noopener,noreferrer")}
-              >
-                <ExternalLink className="w-4 h-4" />
-                View Wishlist
-              </Button>
-            </div>
+            )}
           </div>
         </div>
       </section>

@@ -31,6 +31,7 @@ const TAB_ITEMS: { value: Tab; label: string; icon: React.ReactNode }[] = [
   { value: "rsvps",     label: "RSVPs",     icon: <ClipboardList   className="w-4 h-4" /> },
   { value: "messages",  label: "Messages",  icon: <MessageSquare   className="w-4 h-4" /> },
   { value: "photos",    label: "Photos",    icon: <Image           className="w-4 h-4" /> },
+  { value: "settings",  label: "Settings",  icon: <Settings        className="w-4 h-4" /> },
 ];
 
 export default function DashboardPage() {
@@ -45,9 +46,7 @@ export default function DashboardPage() {
   const [menuOpen, setMenuOpen]   = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const tabs = isAdmin
-    ? [...TAB_ITEMS, { value: "settings" as Tab, label: "Settings", icon: <Settings className="w-4 h-4" /> }]
-    : TAB_ITEMS;
+  const tabs = TAB_ITEMS;
 
   const fetchData = async () => {
     setLoading(true);
@@ -252,7 +251,7 @@ export default function DashboardPage() {
               <TabsTrigger value="rsvps">📋 RSVPs</TabsTrigger>
               <TabsTrigger value="messages">💌 Messages</TabsTrigger>
               <TabsTrigger value="photos">📷 Photos</TabsTrigger>
-              {isAdmin && <TabsTrigger value="settings">⚙️ Settings</TabsTrigger>}
+              <TabsTrigger value="settings">⚙️ Settings</TabsTrigger>
             </TabsList>
 
             {/* Mobile active tab label */}
@@ -282,11 +281,9 @@ export default function DashboardPage() {
               <PhotoGallery photos={photos} isAdmin={isAdmin} onDelete={handlePhotoDelete} />
             </TabsContent>
 
-            {isAdmin && (
-              <TabsContent value="settings">
-                <SettingsPanel />
-              </TabsContent>
-            )}
+            <TabsContent value="settings">
+              <SettingsPanel isAdmin={isAdmin} />
+            </TabsContent>
           </Tabs>
         )}
       </div>

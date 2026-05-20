@@ -35,6 +35,7 @@ export interface EventConfig {
   theme: EventTheme;
   music: string;
   heroPhoto: string | null;
+  heroPhotoMobile: string | null;
   padrinos: Padrino[];
   damas: CourtMember[];
   chambelanes: CourtMember[];
