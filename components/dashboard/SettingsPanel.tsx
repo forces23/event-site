@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Lock, Unlock, Gift, EyeOff, Loader2, Link, Check } from "lucide-react";
+import { Lock, Unlock, Gift, EyeOff, Loader2, Link, Check, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EVENT } from "@/config/alexa";
 
 interface Settings {
-  upload_locked:    boolean;
-  wishlist_enabled: boolean;
-  registry_url:     string;
+  upload_locked:       boolean;
+  wishlist_enabled:    boolean;
+  her_gallery_enabled: boolean;
+  registry_url:        string;
 }
 
 interface SettingsPanelProps {
@@ -18,11 +19,12 @@ interface SettingsPanelProps {
 }
 
 export default function SettingsPanel({ isAdmin }: SettingsPanelProps) {
-  const [settings, setSettings]       = useState<Settings | null>(null);
-  const [savingLock, setSavingLock]   = useState(false);
-  const [savingWish, setSavingWish]   = useState(false);
-  const [urlDraft, setUrlDraft]       = useState("");
-  const [savingUrl, setSavingUrl]     = useState(false);
+  const [settings, setSettings]         = useState<Settings | null>(null);
+  const [savingLock, setSavingLock]     = useState(false);
+  const [savingWish, setSavingWish]     = useState(false);
+  const [savingGallery, setSavingGallery] = useState(false);
+  const [urlDraft, setUrlDraft]         = useState("");
+  const [savingUrl, setSavingUrl]       = useState(false);
 
   useEffect(() => {
     axios
@@ -65,6 +67,23 @@ export default function SettingsPanel({ isAdmin }: SettingsPanelProps) {
       toast.error("Failed to update setting.");
     } finally {
       setSavingWish(false);
+    }
+  };
+
+  const toggleHerGallery = async () => {
+    if (!settings) return;
+    const next = !settings.her_gallery_enabled;
+    setSavingGallery(true);
+    try {
+      const res = await axios.patch<Settings>("/api/dashboard/settings", { her_gallery_enabled: next });
+      setSettings(res.data);
+      toast.success(res.data.her_gallery_enabled
+        ? "Her gallery is now visible to guests."
+        : "Her gallery hidden from guests.");
+    } catch {
+      toast.error("Failed to update setting.");
+    } finally {
+      setSavingGallery(false);
     }
   };
 
@@ -155,6 +174,38 @@ export default function SettingsPanel({ isAdmin }: SettingsPanelProps) {
               {savingWish
                 ? <Loader2 className="w-4 h-4 animate-spin" />
                 : settings?.wishlist_enabled ? "Hide" : "Show"}
+            </Button>
+          </div>
+
+          {/* Her gallery visibility */}
+          <div className="bg-white border border-border rounded-2xl p-5 flex items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5">
+                {settings?.her_gallery_enabled
+                  ? <Images  className="w-5 h-5 text-green-600"   />
+                  : <EyeOff  className="w-5 h-5 text-destructive" />}
+              </div>
+              <div>
+                <p className="font-medium text-sm">Her Gallery</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {settings === null
+                    ? "Loading…"
+                    : settings.her_gallery_enabled
+                    ? "Visible — guests can see her gallery tab"
+                    : "Hidden — her gallery tab is not shown to guests"}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant={settings?.her_gallery_enabled ? "outline" : "default"}
+              size="sm"
+              onClick={toggleHerGallery}
+              disabled={settings === null || savingGallery}
+              className="shrink-0"
+            >
+              {savingGallery
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : settings?.her_gallery_enabled ? "Hide" : "Show"}
             </Button>
           </div>
         </>

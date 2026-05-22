@@ -10,19 +10,21 @@ export async function GET() {
     await connectDB();
     const s = await Settings.findOne({ event: EVENT.id }).lean() as {
       wishlist_enabled?: boolean;
+      her_gallery_enabled?: boolean;
       registry_url?: string;
     } | null;
 
     return NextResponse.json({
-      wishlist_enabled: s?.wishlist_enabled ?? true,
-      registry_url:     s?.registry_url?.trim() || EVENT.registry,
+      wishlist_enabled:    s?.wishlist_enabled    ?? true,
+      her_gallery_enabled: s?.her_gallery_enabled ?? true,
+      registry_url:        s?.registry_url?.trim() || EVENT.registry,
     });
   } catch (err) {
     console.error("[GET /api/settings]", err);
-    // Fail open — show wishlist with config default so the page still works
     return NextResponse.json({
-      wishlist_enabled: true,
-      registry_url:     EVENT.registry,
+      wishlist_enabled:    true,
+      her_gallery_enabled: true,
+      registry_url:        EVENT.registry,
     });
   }
 }

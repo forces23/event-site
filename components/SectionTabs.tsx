@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import EventInfo   from "@/components/EventInfo";
-import Padrinos    from "@/components/Padrinos";
-import Court       from "@/components/Court";
-import Gallery     from "@/components/Gallery";
+import EventInfo    from "@/components/EventInfo";
+import Gallery      from "@/components/Gallery";
 import GuestGallery from "@/components/GuestGallery";
+import { useSettingsStore } from "@/stores/settingsStore";
 import type { EventConfig } from "@/types";
 
 interface SectionTabsProps {
@@ -20,8 +19,20 @@ type GalleryTab = "alexa"   | "party";
 export default function SectionTabs({ event, initialTab = "details", initialGalleryTab = "alexa" }: SectionTabsProps) {
   const [mainTab,    setMainTab]    = useState<MainTab>(initialTab);
   const [galleryTab, setGalleryTab] = useState<GalleryTab>(initialGalleryTab);
-  const barRef    = useRef<HTMLDivElement>(null);
+  const barRef     = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  const { herGalleryEnabled, fetchSettings } = useSettingsStore();
+
+  useEffect(() => {
+    fetchSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // If her gallery gets disabled, fall back to party tab
+  useEffect(() => {
+    if (!herGalleryEnabled) setGalleryTab("party");
+  }, [herGalleryEnabled]);
 
   // Scroll tabs into view when arriving from the upload page
   useEffect(() => {
@@ -35,9 +46,14 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
 
   const switchMain = (tab: MainTab) => {
     setMainTab(tab);
-    // Scroll the tab bar back to top of viewport so content starts visible
     barRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  // Tabs shown in the gallery sub-bar
+  const galleryTabs = [
+    ...(herGalleryEnabled ? [{ value: "alexa" as GalleryTab, label: "Alexa's Gallery" }] : []),
+    { value: "party" as GalleryTab, label: "Party Gallery" },
+  ];
 
   return (
     <div id="sections" ref={sectionRef}>
@@ -65,14 +81,10 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
             >
               {tab === "details" ? "Details" : "Gallery"}
 
-              {/* Active indicator line */}
               {mainTab === tab && (
                 <span
                   className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full"
-                  style={{
-                    width: "40%",
-                    background: "hsl(var(--primary))",
-                  }}
+                  style={{ width: "40%", background: "hsl(var(--primary))" }}
                 />
               )}
             </button>
@@ -82,51 +94,49 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
 
       {/* ── Details tab ───────────────────────────────────────────────────── */}
       {mainTab === "details" && (
-        <>
-          <EventInfo event={event} />
-          {/* <Padrinos  padrinos={event.padrinos} /> */}
-          {/* <Court     damas={event.damas} chambelanes={event.chambelanes} /> */}
-        </>
+        <EventInfo event={event} />
       )}
 
       {/* ── Gallery tab ───────────────────────────────────────────────────── */}
       {mainTab === "gallery" && (
         <div>
-          {/* Gallery sub-tab bar */}
-          <div className="border-b border-border bg-white">
-            <div className="max-w-4xl mx-auto flex">
-              {(["alexa", "party"] as GalleryTab[]).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setGalleryTab(tab)}
-                  className="relative flex-1 py-3 text-xs font-display tracking-[0.18em] uppercase transition-colors"
-                  style={{
-                    color: galleryTab === tab
-                      ? "hsl(var(--accent))"
-                      : "hsl(var(--muted-foreground))",
-                  }}
-                >
-                  {tab === "alexa" ? "Alexa's Gallery" : "Party Gallery"}
+          {/* Sub-tab bar — only shown when both tabs are available */}
+          {galleryTabs.length > 1 && (
+            <div className="border-b border-border bg-white">
+              <div className="max-w-4xl mx-auto flex">
+                {galleryTabs.map(({ value, label }) => (
+                  <button
+                    key={value}
+                    onClick={() => setGalleryTab(value)}
+                    className="relative flex-1 py-3 text-xs font-display tracking-[0.18em] uppercase transition-colors"
+                    style={{
+                      color: galleryTab === value
+                        ? "hsl(var(--accent))"
+                        : "hsl(var(--muted-foreground))",
+                    }}
+                  >
+                    {label}
 
-                  {galleryTab === tab && (
-                    <span
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full"
-                      style={{
-                        width: "40%",
-                        background: "hsl(var(--accent))",
-                      }}
-                    />
-                  )}
-                </button>
-              ))}
+                    {galleryTab === value && (
+                      <span
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full"
+                        style={{ width: "40%", background: "hsl(var(--accent))" }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Gallery sub-tab content */}
-          {galleryTab === "alexa" && (
+          {galleryTab === "alexa" && herGalleryEnabled && (
             <Gallery photos={event.herGallery} name={event.name} />
           )}
           {galleryTab === "party" && (
+            <GuestGallery eventId={event.id} />
+          )}
+          {/* Fallback: if alexa tab is selected but gallery got disabled mid-session */}
+          {galleryTab === "alexa" && !herGalleryEnabled && (
             <GuestGallery eventId={event.id} />
           )}
         </div>

@@ -9,6 +9,9 @@ import {
   Upload, X, CheckCircle, AlertCircle, Loader2, Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 import type { PhotoDocument, PresignRequest, PresignResponse } from "@/types";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -217,11 +220,17 @@ interface PhotoGridProps {
   emptyMessage: string;
 }
 
+type ConfirmState =
+  | { type: "single"; id: string }
+  | { type: "bulk" }
+  | null;
+
 function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridProps) {
   const [selected, setSelected]         = useState<Set<string>>(new Set());
   const [deleting, setDeleting]         = useState<string | null>(null);
   const [deletingBulk, setDeletingBulk] = useState(false);
   const [downloading, setDownloading]   = useState(false);
+  const [confirm, setConfirm]           = useState<ConfirmState>(null);
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => {
@@ -237,8 +246,8 @@ function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridPr
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this photo? This cannot be undone.")) return;
     setDeleting(id);
+    setConfirm(null);
     try {
       await axios.delete(`/api/dashboard/photos/${id}`);
       onDeletePhoto(id);
@@ -252,8 +261,8 @@ function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridPr
   };
 
   const handleDeleteSelected = async () => {
-    if (!confirm(`Delete ${selected.size} photo${selected.size > 1 ? "s" : ""}? This cannot be undone.`)) return;
     setDeletingBulk(true);
+    setConfirm(null);
     const ids = Array.from(selected);
     let failed = 0;
     await Promise.all(
@@ -329,7 +338,7 @@ function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridPr
               Download {selected.size} selected
             </Button>
             {isAdmin && (
-              <Button variant="destructive" size="sm" onClick={handleDeleteSelected} disabled={deletingBulk || !!deleting} className="gap-2">
+              <Button variant="destructive" size="sm" onClick={() => setConfirm({ type: "bulk" })} disabled={deletingBulk || !!deleting} className="gap-2">
                 <Trash2 className="w-4 h-4" />
                 {deletingBulk ? "Deleting…" : `Delete ${selected.size} selected`}
               </Button>
@@ -378,8 +387,8 @@ function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridPr
 
               {isAdmin && (
                 <button
-                  className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
-                  onClick={(e) => { e.stopPropagation(); handleDelete(photo._id); }}
+                  className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-destructive text-white flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow"
+                  onClick={(e) => { e.stopPropagation(); setConfirm({ type: "single", id: photo._id }); }}
                   disabled={deleting === photo._id}
                 >
                   {deleting === photo._id
@@ -391,6 +400,32 @@ function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridPr
           );
         })}
       </div>
+
+      {/* Confirmation dialog — replaces window.confirm() which is blocked on mobile */}
+      <Dialog open={confirm !== null} onOpenChange={(open) => { if (!open) setConfirm(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete photo{confirm?.type === "bulk" && selected.size > 1 ? "s" : ""}?</DialogTitle>
+            <DialogDescription>
+              {confirm?.type === "bulk"
+                ? `This will permanently delete ${selected.size} photo${selected.size > 1 ? "s" : ""}. This cannot be undone.`
+                : "This will permanently delete the photo. This cannot be undone."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end mt-2">
+            <Button variant="outline" onClick={() => setConfirm(null)}>Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (confirm?.type === "single") handleDelete(confirm.id);
+                else if (confirm?.type === "bulk") handleDeleteSelected();
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

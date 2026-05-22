@@ -10,21 +10,18 @@ import RSVPModal from "./RSVPModal";
 import UpdateRSVPModal from "./UpdateRSVPModal";
 import { isDeadlinePassed } from "@/lib/utils";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { useSettingsStore } from "@/stores/settingsStore";
 import type { EventConfig } from "@/types";
 
 export default function EventInfo({ event }: { event: EventConfig }) {
-  const [wishlistEnabled, setWishlistEnabled] = useState(true);
-  const [registryUrl,     setRegistryUrl]     = useState(event.registry);
+  const { wishlistEnabled, registryUrl, fetchSettings } = useSettingsStore();
+  const effectiveRegistryUrl = registryUrl || event.registry;
 
   useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d: { wishlist_enabled: boolean; registry_url: string }) => {
-        setWishlistEnabled(d.wishlist_enabled);
-        setRegistryUrl(d.registry_url);
-      })
-      .catch(() => { /* fail open — defaults already set */ });
+    fetchSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const sectionRef = useRef<HTMLElement>(null);
 
   const [directionsOpen, setDirectionsOpen] = useState(false);
@@ -238,7 +235,7 @@ export default function EventInfo({ event }: { event: EventConfig }) {
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() => window.open(registryUrl, "_blank", "noopener,noreferrer")}
+                  onClick={() => window.open(effectiveRegistryUrl, "_blank", "noopener,noreferrer")}
                 >
                   <ExternalLink className="w-4 h-4" />
                   View Wishlist
