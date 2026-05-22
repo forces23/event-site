@@ -33,11 +33,6 @@ export default function Lightbox({ items, startIndex, onClose }: LightboxProps) 
     return () => window.removeEventListener("keydown", handler);
   }, [items.length, onClose]);
 
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
-
   const item = items[current];
 
   // The outer backdrop handles all close-on-click.

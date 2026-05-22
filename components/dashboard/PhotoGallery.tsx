@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import {
   Trash2, Download, CheckSquare, Square, ImageIcon,
   Upload, X, CheckCircle, AlertCircle, Loader2, Camera,
-  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PhotoDocument, PresignRequest, PresignResponse } from "@/types";
@@ -40,127 +39,15 @@ function formatBytes(bytes: number) {
 }
 
 async function downloadFile(url: string, name: string) {
-  const res = await fetch(url);
+  const proxy = `/api/download?url=${encodeURIComponent(url)}&name=${encodeURIComponent(name)}`;
+  const res = await fetch(proxy);
+  if (!res.ok) throw new Error("Download failed");
   const blob = await res.blob();
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = name;
   a.click();
   URL.revokeObjectURL(a.href);
-}
-
-// ── Carousel / Lightbox ───────────────────────────────────────────────────────
-
-function Carousel({
-  photos,
-  startIndex,
-  onClose,
-}: {
-  photos: PhotoDocument[];
-  startIndex: number;
-  onClose: () => void;
-}) {
-  const [current, setCurrent] = useState(startIndex);
-  const touchStartX = useRef<number | null>(null);
-
-  const prev = () => setCurrent((i) => (i - 1 + photos.length) % photos.length);
-  const next = () => setCurrent((i) => (i + 1) % photos.length);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft")  setCurrent((i) => (i - 1 + photos.length) % photos.length);
-      else if (e.key === "ArrowRight") setCurrent((i) => (i + 1) % photos.length);
-      else if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [photos.length, onClose]);
-
-  // Prevent body scroll while open
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
-
-  const photo = photos[current];
-
-  return (
-    <div
-      className="fixed inset-0 z-50 bg-black/92 flex items-center justify-center"
-      onClick={onClose}
-      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={(e) => {
-        if (touchStartX.current === null) return;
-        const diff = touchStartX.current - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 50) diff > 0 ? next() : prev();
-        touchStartX.current = null;
-      }}
-    >
-      {/* Inner — stop propagation so click on content doesn't close */}
-      <div
-        className="relative w-full h-full flex items-center justify-center p-4 md:p-12"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Close */}
-        <button
-          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
-          onClick={onClose}
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* Counter */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-black/50 text-white/80 text-sm select-none">
-          {current + 1} / {photos.length}
-        </div>
-
-        {/* Prev */}
-        {photos.length > 1 && (
-          <button
-            className="absolute left-2 md:left-4 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
-            onClick={(e) => { e.stopPropagation(); prev(); }}
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-        )}
-
-        {/* Photo */}
-        <div className="relative w-full h-full max-w-5xl max-h-[85vh]">
-          {photo.type === "video" ? (
-            <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-white/50">
-              <ImageIcon className="w-12 h-12" />
-              <p className="text-sm">{photo.original_name}</p>
-            </div>
-          ) : (
-            <Image
-              key={photo._id}
-              src={photo.url}
-              alt={photo.original_name}
-              fill
-              className="object-contain"
-              unoptimized
-              priority
-            />
-          )}
-        </div>
-
-        {/* Next */}
-        {photos.length > 1 && (
-          <button
-            className="absolute right-2 md:right-4 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
-            onClick={(e) => { e.stopPropagation(); next(); }}
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        )}
-
-        {/* Caption */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-black/50 text-white/70 text-xs max-w-xs truncate select-none">
-          {photo.original_name}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 // ── Her Gallery Uploader ──────────────────────────────────────────────────────
@@ -335,7 +222,6 @@ function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridPr
   const [deleting, setDeleting]         = useState<string | null>(null);
   const [deletingBulk, setDeletingBulk] = useState(false);
   const [downloading, setDownloading]   = useState(false);
-  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => {
@@ -428,105 +314,84 @@ function PhotoGrid({ photos, isAdmin, onDeletePhoto, emptyMessage }: PhotoGridPr
   }
 
   return (
-    <>
-      {/* Carousel lightbox */}
-      {carouselIndex !== null && (
-        <Carousel
-          photos={photos}
-          startIndex={carouselIndex}
-          onClose={() => setCarouselIndex(null)}
-        />
-      )}
+    <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-3">
+        <Button variant="outline" size="sm" onClick={toggleAll} className="gap-2">
+          {selected.size === photos.length ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+          {selected.size === photos.length ? "Deselect All" : "Select All"}
+        </Button>
 
-      <div className="space-y-4">
-        {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-3">
-          <Button variant="outline" size="sm" onClick={toggleAll} className="gap-2">
-            {selected.size === photos.length ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-            {selected.size === photos.length ? "Deselect All" : "Select All"}
-          </Button>
-
-          {selected.size > 0 && (
-            <>
-              <Button variant="outline" size="sm" onClick={handleDownloadSelected} disabled={downloading || deletingBulk} className="gap-2">
-                <Download className="w-4 h-4" />
-                Download {selected.size} selected
+        {selected.size > 0 && (
+          <>
+            <Button variant="outline" size="sm" onClick={handleDownloadSelected} disabled={downloading || deletingBulk} className="gap-2">
+              <Download className="w-4 h-4" />
+              Download {selected.size} selected
+            </Button>
+            {isAdmin && (
+              <Button variant="destructive" size="sm" onClick={handleDeleteSelected} disabled={deletingBulk || !!deleting} className="gap-2">
+                <Trash2 className="w-4 h-4" />
+                {deletingBulk ? "Deleting…" : `Delete ${selected.size} selected`}
               </Button>
-              {isAdmin && (
-                <Button variant="destructive" size="sm" onClick={handleDeleteSelected} disabled={deletingBulk || !!deleting} className="gap-2">
-                  <Trash2 className="w-4 h-4" />
-                  {deletingBulk ? "Deleting…" : `Delete ${selected.size} selected`}
-                </Button>
-              )}
-            </>
-          )}
+            )}
+          </>
+        )}
 
-          <Button variant="outline" size="sm" onClick={handleDownloadAll} disabled={downloading} className="gap-2 ml-auto">
-            <Download className="w-4 h-4" />
-            Download All ({photos.length})
-          </Button>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {photos.map((photo, index) => {
-            const isSelected = selected.has(photo._id);
-            return (
-              <div
-                key={photo._id}
-                className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all group ${
-                  isSelected ? "border-primary" : "border-transparent"
-                }`}
-                onClick={() => setCarouselIndex(index)}
-              >
-                {photo.type === "video" ? (
-                  <div className="w-full h-full bg-foreground/10 flex items-center justify-center">
-                    <span className="text-xs text-muted-foreground text-center px-2">{photo.original_name}</span>
-                  </div>
-                ) : (
-                  <Image
-                    src={photo.url}
-                    alt={photo.original_name}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                    unoptimized
-                  />
-                )}
-
-                {/* Selected tint */}
-                {isSelected && (
-                  <div className="absolute inset-0 bg-primary/15 pointer-events-none" />
-                )}
-
-                {/* Select checkbox — top-left */}
-                <button
-                  className={`absolute top-1.5 left-1.5 w-7 h-7 rounded-full flex items-center justify-center transition-all shadow ${
-                    isSelected
-                      ? "bg-primary text-white opacity-100"
-                      : "bg-black/40 text-white opacity-0 group-hover:opacity-100"
-                  }`}
-                  onClick={(e) => { e.stopPropagation(); toggleSelect(photo._id); }}
-                >
-                  {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
-                </button>
-
-                {/* Admin delete — top-right */}
-                {isAdmin && (
-                  <button
-                    className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
-                    onClick={(e) => { e.stopPropagation(); handleDelete(photo._id); }}
-                    disabled={deleting === photo._id}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        <Button variant="outline" size="sm" onClick={handleDownloadAll} disabled={downloading} className="gap-2 ml-auto">
+          <Download className="w-4 h-4" />
+          Download All ({photos.length})
+        </Button>
       </div>
-    </>
+
+      {/* Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {photos.map((photo) => {
+          const isSelected = selected.has(photo._id);
+          return (
+            <div
+              key={photo._id}
+              className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all group ${
+                isSelected ? "border-primary" : "border-transparent"
+              }`}
+              onClick={() => toggleSelect(photo._id)}
+            >
+              {photo.type === "video" ? (
+                <div className="w-full h-full bg-foreground/10 flex items-center justify-center">
+                  <span className="text-xs text-muted-foreground text-center px-2">{photo.original_name}</span>
+                </div>
+              ) : (
+                <Image
+                  src={photo.url}
+                  alt={photo.original_name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  unoptimized
+                />
+              )}
+
+              {isSelected && (
+                <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                  <CheckSquare className="w-8 h-8 text-white drop-shadow" />
+                </div>
+              )}
+
+              {isAdmin && (
+                <button
+                  className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                  onClick={(e) => { e.stopPropagation(); handleDelete(photo._id); }}
+                  disabled={deleting === photo._id}
+                >
+                  {deleting === photo._id
+                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    : <Trash2  className="w-3.5 h-3.5" />}
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
