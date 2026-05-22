@@ -11,7 +11,7 @@ interface GalleryStore {
   removePhoto: (id: string) => void;
 }
 
-export const useGalleryStore = create<GalleryStore>((set) => ({
+export const useGalleryStore = create<GalleryStore>((set, get) => ({
   photos: [],
   isLoading: false,
   lastFetched: null,
