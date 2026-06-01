@@ -12,7 +12,7 @@ export const EVENT: EventConfig = {
   endTime: "2026-07-25T00:00:00",
 
   // Update this once the RSVP deadline is decided
-  rsvpBy: "2026-07-10T23:59:59",
+  rsvpBy: "2026-07-14T23:59:59",
 
   venue: {
     name: "La Roma Banquet Hall",
