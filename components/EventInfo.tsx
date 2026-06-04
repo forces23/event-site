@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, Clock, Navigation, CalendarDays, Shirt, Gift, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Countdown from "./Countdown";
@@ -10,9 +10,18 @@ import RSVPModal from "./RSVPModal";
 import UpdateRSVPModal from "./UpdateRSVPModal";
 import { isDeadlinePassed } from "@/lib/utils";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { useSettingsStore } from "@/stores/settingsStore";
 import type { EventConfig } from "@/types";
 
 export default function EventInfo({ event }: { event: EventConfig }) {
+  const { wishlistEnabled, registryUrl, fetchSettings } = useSettingsStore();
+  const effectiveRegistryUrl = registryUrl || event.registry;
+
+  useEffect(() => {
+    fetchSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const sectionRef = useRef<HTMLElement>(null);
 
   const [directionsOpen, setDirectionsOpen] = useState(false);
@@ -212,25 +221,27 @@ export default function EventInfo({ event }: { event: EventConfig }) {
               </p>
             </div>
 
-            <div className="ei-detail-card p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
-                <Gift className="w-6 h-6 text-accent" />
+            {wishlistEnabled && (
+              <div className="ei-detail-card p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                  <Gift className="w-6 h-6 text-accent" />
+                </div>
+                <h3 className="font-display text-lg font-semibold mb-2">Gifts</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Your presence is the best gift of all! But if you&apos;d like to bring something,
+                  feel free to check the wishlist.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => window.open(effectiveRegistryUrl, "_blank", "noopener,noreferrer")}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View Wishlist
+                </Button>
               </div>
-              <h3 className="font-display text-lg font-semibold mb-2">Gifts</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Your presence is the best gift of all! But if you&apos;d like to bring something,
-                feel free to check the wishlist.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => window.open(event.registry, "_blank", "noopener,noreferrer")}
-              >
-                <ExternalLink className="w-4 h-4" />
-                View Wishlist
-              </Button>
-            </div>
+            )}
           </div>
         </div>
       </section>

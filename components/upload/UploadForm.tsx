@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, CheckCircle, AlertCircle, Film, ImageIcon } from "lucide-react";
+import { Upload, X, CheckCircle, AlertCircle, Film, ImageIcon, Images } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -202,7 +202,15 @@ export default function UploadForm() {
         <div className="text-6xl animate-bounce">🎉</div>
         <h2 className="font-display text-2xl font-semibold text-primary">Photos uploaded!</h2>
         <p className="text-muted-foreground">Your moments are now in the guest gallery.</p>
-        <Button onClick={() => { setFiles([]); setAllDone(false); }}>Upload more</Button>
+        <div className="flex items-center justify-center gap-3">
+          <Button variant="outline" onClick={() => { setFiles([]); setAllDone(false); }}>
+            Upload more
+          </Button>
+          <Button onClick={() => window.location.href = "/?tab=gallery&gallery=party#sections"} className="gap-2">
+            <Images className="w-4 h-4" />
+            View gallery
+          </Button>
+        </div>
       </div>
     );
   }

@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import HeroClouds from "@/components/HeroClouds";
 import type { EventConfig } from "@/types";
 
 const GOLD      = "#C9A84C";
@@ -87,6 +88,27 @@ export default function Hero({ event }: HeroProps) {
         .to(sel(".hero-date"),     { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, "-=0.3")
         .to(sel(".hero-chevron"),  { opacity: 0.5,     duration: 0.5, ease: "power2.out" }, "-=0.1");
 
+      // ── Text block float — gentle levitation after entrance settles ────────
+      // Primary float — keyframe approach (0 → up → 0) avoids yoyo-reversal
+      // jerk. Uses the same pattern as CSS 0%/50%/100% keyframes.
+      gsap.to(sel(".hero-content"), {
+        delay:  3.2,
+        repeat: -1,
+        keyframes: [
+          { y: -22, duration: 2.5, ease: "sine.inOut" },
+          { y:   0, duration: 2.5, ease: "sine.inOut" },
+        ],
+      });
+      // Slow independent tilt on a different period — gives organic, alive feel
+      gsap.to(sel(".hero-content"), {
+        rotation:    1,
+        duration:    5,
+        repeat:     -1,
+        yoyo:        true,
+        ease:        "sine.inOut",
+        delay:       3.2,
+      });
+
       // ── Sparkle twinkling — each star flashes on/off on its own rhythm ──
       // Start invisible; GSAP controls all opacity so there's no CSS flash.
       gsap.set(sel(".hero-sparkle"), { scale: 0, opacity: 0 });
@@ -137,7 +159,7 @@ export default function Hero({ event }: HeroProps) {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative min-h-screen flex flex-col overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       style={
         !event.heroPhoto
           ? {
@@ -146,23 +168,35 @@ export default function Hero({ event }: HeroProps) {
           : undefined
       }
     >
-      {/* Full-screen photo + parallax wrapper */}
+      {/* Full-width photo + parallax wrapper */}
       {event.heroPhoto && (
         <div
           ref={parallaxRef}
           className="absolute inset-0"
           style={{ willChange: "transform" }}
         >
+          {/* Desktop image */}
           <Image
             src={event.heroPhoto}
             alt={event.name}
             fill
-            className="object-cover object-top"
+            className="object-cover object-top hidden md:block"
+            priority
+          />
+          {/* Mobile / tablet image — falls back to desktop image if not set */}
+          <Image
+            src={event.heroPhotoMobile ?? event.heroPhoto}
+            alt={event.name}
+            fill
+            className="object-cover object-top block md:hidden"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         </div>
       )}
+
+      {/* Clouds — soft blurred ellipses drifting right → left */}
+      {/* <HeroClouds /> */}
 
       {/* Sparkle field — 31 independently twinkling SVG stars */}
       <div className="absolute inset-0 pointer-events-none select-none z-10">
@@ -203,7 +237,7 @@ export default function Hero({ event }: HeroProps) {
       </div>
 
       {/* Text block — pinned to the bottom */}
-      <div className="relative z-20 mt-auto pb-20 text-center px-6 space-y-2">
+      <div className="hero-content relative z-20 text-center px-6 space-y-2">
         <p
           className="hero-subtitle text-md md:text-lg tracking-[0.35em] uppercase font-display font-light pb-8"
           style={{

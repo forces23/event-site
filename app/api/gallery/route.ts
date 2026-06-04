@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
-    const photos = await Photo.find({ event: EVENT.id })
+    const photos = await Photo.find({ event: EVENT.id, category: { $ne: "her" } })
       .sort({ created_at: -1 })
       .lean();
 

@@ -14,7 +14,8 @@ export const r2 = new S3Client({
   },
 });
 
-export const R2_BUCKET = process.env.R2_BUCKET_NAME!;
+import { R2_BUCKET } from "@/config/alexa";
+export { R2_BUCKET };
 export const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL!;
 
 export async function getPresignedPutUrl(

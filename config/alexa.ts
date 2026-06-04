@@ -1,5 +1,7 @@
 import type { EventConfig } from "@/types";
 
+export const R2_BUCKET = "quince-uploads";
+
 export const EVENT: EventConfig = {
   id: "alexa_quince_2026",
   name: "Alexa Hernandez",
@@ -10,7 +12,7 @@ export const EVENT: EventConfig = {
   endTime: "2026-07-25T00:00:00",
 
   // Update this once the RSVP deadline is decided
-  rsvpBy: "2026-07-01T23:59:59",
+  rsvpBy: "2026-07-14T23:59:59",
 
   venue: {
     name: "La Roma Banquet Hall",
@@ -21,9 +23,9 @@ export const EVENT: EventConfig = {
   },
 
   theme: {
-    // Mint green + gold — change these per sister
-    primaryColor: "#6db89a",
-    primaryColorHsl: "153 35% 57%",
+    // Pink + gold — change these per sister
+    primaryColor: "#e07898",
+    primaryColorHsl: "343 65% 68%",
     accentColor: "#c9a84c",
     accentColorHsl: "42 56% 55%",
     font: "Playfair Display",
@@ -34,7 +36,9 @@ export const EVENT: EventConfig = {
   music: "/music/song.mp3",
 
   // Set to a path string once the photo is ready, e.g. "/photos/alexa.jpg"
-  heroPhoto: "/photos/alexa-ai-1.png",
+  // heroPhoto: "/photos/alexa-ai-1.png",
+  heroPhoto: "/photos/floral-1.png",
+  heroPhotoMobile: "/photos/floral-mobile.png",
 
   padrinos: [
     { name: "[Family Name] Family", role: "Florals" },

@@ -35,6 +35,7 @@ export interface EventConfig {
   theme: EventTheme;
   music: string;
   heroPhoto: string | null;
+  heroPhotoMobile: string | null;
   padrinos: Padrino[];
   damas: CourtMember[];
   chambelanes: CourtMember[];
@@ -105,6 +106,7 @@ export interface PhotoDocument {
   mime_type: string;
   size: number;
   type: "image" | "video";
+  category: "guest" | "her";
   created_at: string;
 }
 

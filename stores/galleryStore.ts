@@ -11,12 +11,13 @@ interface GalleryStore {
   removePhoto: (id: string) => void;
 }
 
-export const useGalleryStore = create<GalleryStore>((set) => ({
+export const useGalleryStore = create<GalleryStore>((set, get) => ({
   photos: [],
   isLoading: false,
   lastFetched: null,
 
   fetchPhotos: async () => {
+    if (get().isLoading) return;
     set({ isLoading: true });
     try {
       const { data } = await axios.get<{ photos: PhotoDocument[] }>("/api/gallery");

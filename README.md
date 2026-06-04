@@ -13,7 +13,9 @@ A custom Quinceañera event website built with Next.js. Includes an animated inv
 | Animation | GSAP 3 + ScrollTrigger, @gsap/react |
 | Database | MongoDB Atlas via Mongoose |
 | Auth | Better Auth |
-| File Storage | Cloudflare R2 (S3-compatible) |
+| File Storage | Cloudflare R2 (S3-compatible, presigned PUT uploads) |
+| DNS / Proxy | Cloudflare (domain, CDN, SSL) |
+| Hosting | Vercel (serverless + edge functions) |
 | Forms | React Hook Form + Zod |
 | State | Zustand |
 | Notifications | Sonner |
@@ -52,7 +54,7 @@ app/
 
 components/                 # All React UI components
 config/
-  alexa.ts                  # Event configuration (edit this per event)
+  alexa.ts                  # Event configuration (one file per event)
 lib/
   auth.ts                   # Better Auth server config
   auth-client.ts            # Better Auth client hooks
@@ -66,7 +68,7 @@ models/
 stores/
   galleryStore.ts           # Zustand gallery state
 types/
-  index.ts                  # Shared TypeScript interfaces
+  index.ts                  # Shared TypeScript interfaces (EventConfig)
 scripts/
   seed-users.ts             # Seeds admin + viewer accounts
   generate-qr.ts            # Generates public/qr-upload.png
@@ -198,7 +200,9 @@ Photo uploads use presigned PUT URLs generated server-side — the client upload
 
 ---
 
-## Deployment (Vercel)
+## Deployment (Vercel + Cloudflare)
+
+### Vercel
 
 1. Push the repo to GitHub
 2. Import the project in [Vercel](https://vercel.com)
@@ -206,15 +210,77 @@ Photo uploads use presigned PUT URLs generated server-side — the client upload
 4. Set `BETTER_AUTH_URL` and `NEXT_PUBLIC_SITE_URL` to the production domain
 5. Deploy
 
-The app uses the Next.js App Router and is compatible with Vercel's edge and serverless functions out of the box.
+The app uses the Next.js App Router and is compatible with Vercel's serverless and edge functions out of the box.
+
+### Cloudflare DNS (custom domain)
+
+1. Add the custom domain in the Vercel project settings → Domains
+2. In Cloudflare DNS, add a `CNAME` record pointing your domain to `cname.vercel-dns.com`
+3. Set the proxy status to **DNS only** (gray cloud) — Vercel manages SSL; proxying through Cloudflare can interfere with Vercel's cert provisioning
 
 ---
 
-## Reusing for Another Event
+## Spinning Up a New Event (Checklist)
 
-1. Duplicate or edit `config/alexa.ts` and fill in the new event's details
-2. Update `app/page.tsx` to import the new config
-3. Swap out any photos in `public/`
-4. Re-run `npm run seed` and `npm run generate-qr` for the new event
+Each new quinceañera needs its own config file. Everything display-related (names, dates, colors, court) lives there — no component edits needed for standard customizations.
 
-All display logic, animations, and layout pull from the config — no component edits needed for standard customization.
+### Step 1 — Create a config file
+
+```bash
+cp config/alexa.ts config/<name>.ts
+```
+
+Update every field in the new file:
+
+| Field | What to change |
+|---|---|
+| `id` | Unique string, e.g. `"sofia_quince_2027"` |
+| `name` / `fullTitle` | The quinceañera's name |
+| `date` / `endTime` / `rsvpBy` | Event dates (ISO format) |
+| `venue` | Name, address, lat/lng, mapsQuery |
+| `theme` | `primaryColor`, `accentColor`, `font`, `scriptFont` |
+| `music` | Path to MP3 in `public/music/` |
+| `heroPhoto` / `heroPhotoMobile` | Paths to photos in `public/photos/` |
+| `padrinos` | Sponsor families and their roles |
+| `damas` / `chambelanes` | Court members and their photos |
+| `dresscode` | Dress code text |
+| `registry` | Gift registry URL |
+| `herGallery` | Array of curated photo paths |
+
+### Step 2 — Wire up the new config
+
+In [`app/page.tsx`](app/page.tsx), swap the import:
+
+```ts
+// Before
+import { EVENT } from "@/config/alexa";
+
+// After
+import { EVENT } from "@/config/<name>";
+```
+
+### Step 3 — Add assets
+
+- Drop the hero photo(s) in `public/photos/`
+- Drop the background MP3 in `public/music/`
+- Drop court member photos in `public/` (or use a CDN path)
+
+### Step 4 — Provision infrastructure
+
+- **MongoDB**: Create a new database (or collection with a new `event` id) in Atlas
+- **Cloudflare R2**: Create a new bucket for the new event's guest uploads
+- **Vercel**: Create a new project (or new deployment of this repo) with a fresh set of env vars
+- **Cloudflare DNS**: Point the new domain to the Vercel deployment
+
+### Step 5 — Configure the new deployment
+
+```bash
+# In the new project's .env.local:
+R2_BUCKET_NAME=<name>-uploads
+NEXT_PUBLIC_SITE_URL=https://<newdomain>.com
+BETTER_AUTH_URL=https://<newdomain>.com
+
+npm run seed        # Create admin + viewer accounts for the new event
+npm run r2:cors     # Apply CORS to the new R2 bucket
+npm run generate-qr # Generate a QR code for the new upload page
+```
