@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { auth } from "@/lib/auth";
 import { getPresignedPutUrl, getPublicUrl } from "@/lib/r2";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 import type { PresignRequest, PresignResponse } from "@/types";
 
 const ALLOWED_IMAGE_TYPES = new Set([

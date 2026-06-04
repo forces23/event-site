@@ -14,7 +14,7 @@ export const r2 = new S3Client({
   },
 });
 
-import { R2_BUCKET } from "@/config/alexa";
+import { R2_BUCKET } from "@/config/config";
 export { R2_BUCKET };
 export const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL!;
 

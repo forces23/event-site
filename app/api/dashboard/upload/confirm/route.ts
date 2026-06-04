@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Photo from "@/models/Photo";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 interface ConfirmFile {
   key: string;

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Photo from "@/models/Photo";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 export async function GET() {
   try {

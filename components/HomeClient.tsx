@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import dynamic from "next/dynamic";
 import MusicPlayer, { type MusicPlayerHandle } from "@/components/MusicPlayer";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 const EnvelopeIntro = dynamic(() => import("@/components/EnvelopeIntro"), { ssr: false });
 

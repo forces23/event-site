@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Lock, Unlock, Gift, EyeOff, Loader2, Link, Check, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 interface Settings {
   upload_locked:       boolean;

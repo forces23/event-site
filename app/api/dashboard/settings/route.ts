@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { connectDB } from "@/lib/db";
 import Settings from "@/models/Settings";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Photo from "@/models/Photo";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Great_Vibes, Playfair_Display, Montserrat } from "next/font/google";
 import { Toaster } from "sonner";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 import "./globals.css";
 
 const montserrat = Montserrat({

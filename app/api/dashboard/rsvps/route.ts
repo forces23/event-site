@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Rsvp from "@/models/RSVP";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 import type { DashboardStats } from "@/types";
 
 export async function GET(request: NextRequest) {

@@ -16,7 +16,7 @@ import RSVPTable from "@/components/dashboard/RSVPTable";
 import MessagesWall from "@/components/dashboard/MessagesWall";
 import PhotoGallery from "@/components/dashboard/PhotoGallery";
 import SettingsPanel from "@/components/dashboard/SettingsPanel";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 import type { RsvpDocument, PhotoDocument, DashboardStats } from "@/types";
 
 interface DashboardData {

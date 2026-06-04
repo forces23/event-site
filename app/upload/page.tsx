@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Lock } from "lucide-react";
 import UploadForm from "@/components/upload/UploadForm";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 import { connectDB } from "@/lib/db";
 import Settings from "@/models/Settings";
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Rsvp from "@/models/RSVP";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 export async function POST(req: NextRequest) {
   try {

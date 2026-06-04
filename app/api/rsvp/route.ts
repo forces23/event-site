@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { connectDB } from "@/lib/db";
 import Rsvp from "@/models/RSVP";
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 
 export async function POST(req: NextRequest) {
   try {

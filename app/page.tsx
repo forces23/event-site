@@ -1,4 +1,4 @@
-import { EVENT } from "@/config/alexa";
+import { EVENT } from "@/config/config";
 import HomeClient  from "@/components/HomeClient";
 import Hero        from "@/components/Hero";
 import SectionTabs from "@/components/SectionTabs";
