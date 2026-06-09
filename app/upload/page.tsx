@@ -9,8 +9,8 @@ import Settings from "@/models/Settings";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: `Upload Photos — ${EVENT.fullTitle}`,
-  description: `Share your photos and videos from ${EVENT.fullTitle}`,
+  title: `Subir Fotos — ${EVENT.fullTitle}`,
+  description: `Comparte tus fotos y videos de ${EVENT.fullTitle}`,
 };
 
 export default async function UploadPage() {
@@ -32,14 +32,14 @@ export default async function UploadPage() {
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to invitation
+          Volver a la invitación
         </Link>
 
         <div className="text-center mb-10">
-          <p className="font-script text-5xl text-primary mb-2">Share</p>
-          <h1 className="font-display text-2xl font-semibold">Your Moments</h1>
+          <p className="font-script text-5xl text-primary mb-2">Comparte</p>
+          <h1 className="font-display text-2xl font-semibold">Tus Momentos</h1>
           <p className="text-muted-foreground text-sm mt-2">
-            Upload your photos and videos from the celebration
+            Sube tus fotos y videos de la celebración
           </p>
           <div
             className="w-16 h-0.5 mx-auto mt-4"
@@ -60,9 +60,9 @@ export default async function UploadPage() {
                 />
               </div>
               <div>
-                <p className="font-display font-semibold text-lg">Uploads are closed</p>
+                <p className="font-display font-semibold text-lg">Las subidas están cerradas</p>
                 <p className="text-muted-foreground text-sm mt-1">
-                  Photo uploads aren&apos;t open right now. Check back on the day of the event!
+                  Las subidas de fotos no están abiertas en este momento. ¡Vuelve el día del evento!
                 </p>
               </div>
             </div>
@@ -72,7 +72,7 @@ export default async function UploadPage() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          Photos appear in the guest gallery on the main page
+          Las fotos aparecen en la galería de invitados en la página principal
         </p>
       </div>
     </main>

@@ -11,7 +11,7 @@ export default async function Home({
 }) {
   const params           = await searchParams;
   const initialTab       = params.tab     === "gallery" ? "gallery" : "details";
-  const initialGalleryTab = params.gallery === "party"   ? "party"   : "alexa";
+  const initialGalleryTab = params.gallery === "party"   ? "party"   : "her";
 
   return (
     <main>

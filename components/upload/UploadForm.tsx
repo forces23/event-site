@@ -81,28 +81,28 @@ export default function UploadForm() {
       const isVid = VIDEO_TYPES.has(f.type);
 
       if (!isImg && !isVid) {
-        errors.push(`"${f.name}" is not a supported file type.`);
+        errors.push(`"${f.name}" no es un tipo de archivo compatible.`);
         continue;
       }
       if (isImg) {
         imgCount++;
         if (imgCount > MAX_IMAGES) {
-          errors.push(`Max ${MAX_IMAGES} images per upload.`);
+          errors.push(`Máximo ${MAX_IMAGES} imágenes por subida.`);
           continue;
         }
         if (f.size > MAX_IMAGE_BYTES) {
-          errors.push(`"${f.name}" exceeds the 20 MB image limit.`);
+          errors.push(`"${f.name}" supera el límite de 20 MB por imagen.`);
           continue;
         }
       }
       if (isVid) {
         vidCount++;
         if (vidCount > MAX_VIDEOS) {
-          errors.push(`Max ${MAX_VIDEOS} videos per upload.`);
+          errors.push(`Máximo ${MAX_VIDEOS} videos por subida.`);
           continue;
         }
         if (f.size > MAX_VIDEO_BYTES) {
-          errors.push(`"${f.name}" exceeds the 500 MB video limit.`);
+          errors.push(`"${f.name}" supera el límite de 500 MB por video.`);
           continue;
         }
       }
@@ -163,14 +163,14 @@ export default function UploadForm() {
           } catch {
             updateFile(item.id, {
               status: "error",
-              error: "Upload failed. Please try again.",
+              error: "La subida falló. Inténtalo de nuevo.",
             });
           }
         })
       );
 
       if (confirmed.length === 0) {
-        toast.error("All uploads failed. Please try again.");
+        toast.error("Todas las subidas fallaron. Inténtalo de nuevo.");
         return;
       }
 
@@ -182,12 +182,12 @@ export default function UploadForm() {
 
       addPhotos(confirmData.photos);
       setAllDone(true);
-      toast.success(`${confirmed.length} file${confirmed.length > 1 ? "s" : ""} uploaded!`);
+      toast.success(`¡${confirmed.length} archivo${confirmed.length > 1 ? "s" : ""} subido${confirmed.length > 1 ? "s" : ""}!`);
     } catch (err: unknown) {
       const msg =
         axios.isAxiosError(err) && err.response?.data?.error
           ? err.response.data.error
-          : "Something went wrong. Please try again.";
+          : "Algo salió mal. Inténtalo de nuevo.";
       toast.error(msg);
     } finally {
       setUploading(false);
@@ -200,15 +200,15 @@ export default function UploadForm() {
     return (
       <div className="text-center py-12 space-y-4">
         <div className="text-6xl animate-bounce">🎉</div>
-        <h2 className="font-display text-2xl font-semibold text-primary">Photos uploaded!</h2>
-        <p className="text-muted-foreground">Your moments are now in the guest gallery.</p>
+        <h2 className="font-display text-2xl font-semibold text-primary">¡Fotos subidas!</h2>
+        <p className="text-muted-foreground">Tus momentos ya están en la galería de invitados.</p>
         <div className="flex items-center justify-center gap-3">
           <Button variant="outline" onClick={() => { setFiles([]); setAllDone(false); }}>
-            Upload more
+            Subir más
           </Button>
           <Button onClick={() => window.location.href = "/?tab=gallery&gallery=party#sections"} className="gap-2">
             <Images className="w-4 h-4" />
-            View gallery
+            Ver galería
           </Button>
         </div>
       </div>
@@ -225,11 +225,11 @@ export default function UploadForm() {
         onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
       >
         <Upload className="w-10 h-10 text-primary/40 mx-auto mb-3" />
-        <p className="font-display font-semibold text-lg mb-1">Drop files here</p>
-        <p className="text-sm text-muted-foreground">or click to browse</p>
+        <p className="font-display font-semibold text-lg mb-1">Arrastra los archivos aquí</p>
+        <p className="text-sm text-muted-foreground">o haz clic para explorar</p>
         <p className="text-xs text-muted-foreground mt-3">
-          JPG, PNG, HEIC — up to 20 MB each, max {MAX_IMAGES} images<br />
-          MP4, MOV — up to 500 MB each, max {MAX_VIDEOS} videos
+          JPG, PNG, HEIC — hasta 20 MB cada una, máx {MAX_IMAGES} imágenes<br />
+          MP4, MOV — hasta 500 MB cada uno, máx {MAX_VIDEOS} videos
         </p>
         <input
           ref={inputRef}
@@ -258,7 +258,7 @@ export default function UploadForm() {
           onClick={handleUpload}
           disabled={uploading}
         >
-          {uploading ? "Uploading..." : `Upload ${pendingCount} file${pendingCount > 1 ? "s" : ""}`}
+          {uploading ? "Subiendo..." : `Subir ${pendingCount} archivo${pendingCount > 1 ? "s" : ""}`}
         </Button>
       )}
     </div>

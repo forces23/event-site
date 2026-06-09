@@ -30,16 +30,16 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
   }, [targetDate]);
 
   const units = [
-    { label: "Days", value: timeLeft.days },
-    { label: "Hours", value: timeLeft.hours },
-    { label: "Minutes", value: timeLeft.minutes },
-    { label: "Seconds", value: timeLeft.seconds },
+    { label: "Días", value: timeLeft.days },
+    { label: "Horas", value: timeLeft.hours },
+    { label: "Minutos", value: timeLeft.minutes },
+    { label: "Segundos", value: timeLeft.seconds },
   ];
 
   if (!mounted) {
     return (
       <div className="flex gap-3 md:gap-6 justify-center">
-        {["Days", "Hours", "Minutes", "Seconds"].map((label) => (
+        {["Días", "Horas", "Minutos", "Segundos"].map((label) => (
           <div key={label} className="text-center">
             <div className="text-4xl md:text-6xl font-display font-bold text-primary w-16 md:w-24 tabular-nums">
               --
@@ -58,7 +58,7 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
   if (allZero) {
     return (
       <p className="text-xl md:text-2xl font-display text-primary text-center">
-        🎉 The celebration is here!
+        🎉 ¡Llegó el gran día!
       </p>
     );
   }

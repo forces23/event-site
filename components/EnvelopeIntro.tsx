@@ -56,9 +56,15 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
     if (alreadyVisited) return;
     const update = () => {
       if (!sceneRef.current) return;
-      const byW = Math.min(window.innerWidth  * 0.80, 1000) / 340;
-      const byH = Math.min(window.innerHeight * 0.75,  500) / 230;
-      sceneRef.current.style.transform = `scale(${Math.min(byW, byH)})`;
+      // Keep the fully-opened scene inside the viewport. Measured from the
+      // scene's center: the card rises to 258px above center (top 52 − rise 195
+      // = −143, vs center 115), the envelope sits 115px below, and it's 170px to
+      // each side. Scale so the largest extent (the rising card) fits with a
+      // small margin, and cap it so it isn't huge on big screens.
+      const MARGIN = 24;
+      const byW = (window.innerWidth  / 2 - MARGIN) / 170;
+      const byH = (window.innerHeight / 2 - MARGIN) / 258;
+      sceneRef.current.style.transform = `scale(${Math.min(byW, byH, 2.4)})`;
     };
     update();
     window.addEventListener("resize", update);
@@ -153,11 +159,11 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
         >
           <div className="absolute pointer-events-none" style={{ inset: 7, border: "0.5px solid rgba(201,168,76,0.38)", borderRadius: 4 }} />
           <p className="font-script text-center" style={{ fontSize: "2rem", color: "#C9A84C", lineHeight: 1.1 }}>
-            You&apos;re Invited
+            Estás Invitada
           </p>
           <div style={{ width: 60, height: 1, background: "#C9A84C", opacity: 0.45 }} />
           <p className="font-display text-center" style={{ fontSize: "0.7rem", color: "#7a5c2a", letterSpacing: "0.20em" }}>
-            QUINCE AÑOS
+            <span translate="no" className="notranslate">MIS XV AÑOS</span>
           </p>
         </div>
 
@@ -200,11 +206,12 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
 
       </div>
 
-      {/* Tap to open prompt */}
+      {/* Tap to open prompt — absolutely positioned so it doesn't push the
+          centered envelope off-center */}
       {waitingToOpen && (
-        <div className="mt-10 flex flex-col items-center gap-2 animate-pulse pointer-events-none select-none">
+        <div className="absolute bottom-[12%] left-0 right-0 flex flex-col items-center gap-2 animate-pulse pointer-events-none select-none">
           <p className="font-display text-sm tracking-widest uppercase" style={{ color: "#9a7a2a" }}>
-            Tap to open
+            Toca para abrir
           </p>
         </div>
       )}

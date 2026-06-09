@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { ScrollTrigger } from "@/lib/gsap";
 import EventInfo    from "@/components/EventInfo";
+import Padrinos     from "@/components/Padrinos";
 import Gallery      from "@/components/Gallery";
 import GuestGallery from "@/components/GuestGallery";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -10,13 +12,13 @@ import type { EventConfig } from "@/types";
 interface SectionTabsProps {
   event: EventConfig;
   initialTab?: "details" | "gallery";
-  initialGalleryTab?: "alexa" | "party";
+  initialGalleryTab?: "her" | "party";
 }
 
 type MainTab    = "details" | "gallery";
-type GalleryTab = "alexa"   | "party";
+type GalleryTab = "her"     | "party";
 
-export default function SectionTabs({ event, initialTab = "details", initialGalleryTab = "alexa" }: SectionTabsProps) {
+export default function SectionTabs({ event, initialTab = "details", initialGalleryTab = "her" }: SectionTabsProps) {
   const [mainTab,    setMainTab]    = useState<MainTab>(initialTab);
   const [galleryTab, setGalleryTab] = useState<GalleryTab>(initialGalleryTab);
   const barRef     = useRef<HTMLDivElement>(null);
@@ -34,6 +36,14 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
     if (!herGalleryEnabled) setGalleryTab("party");
   }, [herGalleryEnabled]);
 
+  // Switching tabs changes the page height, which leaves the always-mounted
+  // Footer's scroll-trigger positions stale (it can get stuck hidden). Recalc
+  // after the new tab's content has laid out.
+  useEffect(() => {
+    const id = setTimeout(() => ScrollTrigger.refresh(), 100);
+    return () => clearTimeout(id);
+  }, [mainTab, galleryTab]);
+
   // Scroll tabs into view when arriving from the upload page
   useEffect(() => {
     if (initialTab === "gallery") {
@@ -50,9 +60,10 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
   };
 
   // Tabs shown in the gallery sub-bar
+  const firstName = event.name.split(" ")[0];
   const galleryTabs = [
-    ...(herGalleryEnabled ? [{ value: "alexa" as GalleryTab, label: "Alexa's Gallery" }] : []),
-    { value: "party" as GalleryTab, label: "Party Gallery" },
+    ...(herGalleryEnabled ? [{ value: "her" as GalleryTab, label: `Galería de ${firstName}` }] : []),
+    { value: "party" as GalleryTab, label: "Galería de la Fiesta" },
   ];
 
   return (
@@ -79,7 +90,7 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
                   : "hsl(var(--muted-foreground))",
               }}
             >
-              {tab === "details" ? "Details" : "Gallery"}
+              {tab === "details" ? "Detalles" : "Galería"}
 
               {mainTab === tab && (
                 <span
@@ -94,7 +105,10 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
 
       {/* ── Details tab ───────────────────────────────────────────────────── */}
       {mainTab === "details" && (
-        <EventInfo event={event} />
+        <>
+          <EventInfo event={event} />
+          {event.padrinos.length > 0 && <Padrinos padrinos={event.padrinos} />}
+        </>
       )}
 
       {/* ── Gallery tab ───────────────────────────────────────────────────── */}
@@ -129,14 +143,14 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
             </div>
           )}
 
-          {galleryTab === "alexa" && herGalleryEnabled && (
+          {galleryTab === "her" && herGalleryEnabled && (
             <Gallery photos={event.herGallery} name={event.name} />
           )}
           {galleryTab === "party" && (
             <GuestGallery eventId={event.id} />
           )}
-          {/* Fallback: if alexa tab is selected but gallery got disabled mid-session */}
-          {galleryTab === "alexa" && !herGalleryEnabled && (
+          {/* Fallback: if her tab is selected but gallery got disabled mid-session */}
+          {galleryTab === "her" && !herGalleryEnabled && (
             <GuestGallery eventId={event.id} />
           )}
         </div>

@@ -76,6 +76,9 @@ const MusicPlayer = forwardRef<MusicPlayerHandle, { src: string }>(
       localStorage.setItem(MUTE_KEY, String(next));
     };
 
+    // No track configured (e.g. music: "") — render no player at all.
+    if (!src) return null;
+
     return (
       <>
         <audio ref={audioRef} src={src} preload="auto" />

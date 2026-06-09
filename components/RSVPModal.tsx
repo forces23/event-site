@@ -21,19 +21,19 @@ import {
 
 const schema = z
   .object({
-    name: z.string().min(1, "Full name is required"),
-    email: z.string().email("Invalid email").or(z.literal("")).optional(),
+    name: z.string().min(1, "El nombre es obligatorio"),
+    email: z.string().email("Correo inválido").or(z.literal("")).optional(),
     phone: z.string().optional(),
-    relationship: z.string().min(1, "Please select your relationship"),
+    relationship: z.string().min(1, "Selecciona tu parentesco"),
     status: z.enum(["attending", "declined"]),
     total_adults: z.number().min(1).max(20),
     total_kids: z.number().min(0).max(20),
-    msg: z.string().max(300, "Max 300 characters").optional(),
+    msg: z.string().max(300, "Máximo 300 caracteres").optional(),
     is_public: z.boolean(),
   })
   .superRefine((d, ctx) => {
     if (!d.email && !d.phone?.trim()) {
-      ctx.addIssue({ code: "custom", path: ["email"], message: "Email or phone is required" });
+      ctx.addIssue({ code: "custom", path: ["email"], message: "Se requiere correo o teléfono" });
     }
   });
 
@@ -125,7 +125,7 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
       const message =
         axios.isAxiosError(err) && err.response?.data?.error
           ? err.response.data.error
-          : "Something went wrong. Please try again.";
+          : "Algo salió mal. Inténtalo de nuevo.";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -156,40 +156,40 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
               <div className="space-y-4">
                 <DialogHeader>
                   <DialogTitle className="font-display text-2xl text-primary">
-                    Your Info
+                    Tus Datos
                   </DialogTitle>
                 </DialogHeader>
 
                 <div>
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input id="name" placeholder="Maria Garcia" className="mt-1" {...register("name")} />
+                  <Label htmlFor="name">Nombre Completo *</Label>
+                  <Input id="name" placeholder="María García" className="mt-1" {...register("name")} />
                   {errors.name && <p className="text-destructive text-xs mt-1">{errors.name.message}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="maria@email.com" className="mt-1" {...register("email")} />
+                  <Label htmlFor="email">Correo</Label>
+                  <Input id="email" type="email" placeholder="maria@correo.com" className="mt-1" {...register("email")} />
                   {errors.email && <p className="text-destructive text-xs mt-1">{errors.email.message}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="phone">Teléfono</Label>
                   <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" className="mt-1" {...register("phone")} />
-                  <p className="text-muted-foreground text-xs mt-1">At least email or phone is required</p>
+                  <p className="text-muted-foreground text-xs mt-1">Se requiere al menos correo o teléfono</p>
                 </div>
 
                 <div>
-                  <Label htmlFor="relationship">Relationship</Label>
+                  <Label htmlFor="relationship">Parentesco</Label>
                   <select
                     id="relationship"
                     className="mt-1 flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     {...register("relationship")}
                   >
-                    <option value="">Select...</option>
-                    <option value="family">Family</option>
-                    <option value="friend">Friend</option>
-                    <option value="coworker">Coworker</option>
-                    <option value="other">Other</option>
+                    <option value="">Selecciona...</option>
+                    <option value="family">Familia</option>
+                    <option value="friend">Amigo/a</option>
+                    <option value="coworker">Compañero/a de trabajo</option>
+                    <option value="other">Otro</option>
                   </select>
                   {errors.relationship && (
                     <p className="text-destructive text-xs mt-1">{errors.relationship.message}</p>
@@ -197,7 +197,7 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
                 </div>
 
                 <Button type="button" className="w-full" size="lg" onClick={goToStep2}>
-                  Next →
+                  Siguiente →
                 </Button>
               </div>
             )}
@@ -207,7 +207,7 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
               <div className="space-y-6">
                 <DialogHeader>
                   <DialogTitle className="font-display text-2xl text-primary">
-                    Will you be joining us?
+                    ¿Nos acompañarás?
                   </DialogTitle>
                 </DialogHeader>
 
@@ -222,7 +222,7 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
                     }`}
                   >
                     <div className="text-3xl mb-2">🎉</div>
-                    <p className="font-display font-semibold text-sm">Yes, I'd love to!</p>
+                    <p className="font-display font-semibold text-sm">¡Sí, con gusto!</p>
                   </button>
 
                   <button
@@ -235,29 +235,29 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
                     }`}
                   >
                     <div className="text-3xl mb-2">💌</div>
-                    <p className="font-display font-semibold text-sm">Sadly, I can't</p>
+                    <p className="font-display font-semibold text-sm">Lamentablemente, no puedo</p>
                   </button>
                 </div>
 
                 {status === "attending" && (
                   <div className="space-y-4">
                     <Stepper
-                      label="How many adults?"
+                      label="¿Cuántos adultos?"
                       value={totalAdults}
                       min={1}
                       onChange={(v) => setValue("total_adults", v)}
                     />
                     <Stepper
-                      label="How many kids?"
+                      label="¿Cuántos niños?"
                       value={totalKids}
                       min={0}
                       onChange={(v) => setValue("total_kids", v)}
                     />
                     <p className="text-sm text-muted-foreground text-center">
-                      Total guests: <strong>{totalAdults + totalKids}</strong>
+                      Total de invitados: <strong>{totalAdults + totalKids}</strong>
                     </p>
                     <Button type="button" className="w-full" size="lg" onClick={() => setStep(3)}>
-                      Next →
+                      Siguiente →
                     </Button>
                   </div>
                 )}
@@ -269,7 +269,7 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
                   className="w-full"
                   onClick={() => setStep(1)}
                 >
-                  ← Back
+                  ← Atrás
                 </Button>
               </div>
             )}
@@ -279,15 +279,15 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
               <div className="space-y-5">
                 <DialogHeader>
                   <DialogTitle className="font-display text-2xl text-primary">
-                    Leave a message 💌
+                    Deja un mensaje 💌
                   </DialogTitle>
                 </DialogHeader>
 
                 <div>
-                  <Label htmlFor="msg">A message for {eventName}</Label>
+                  <Label htmlFor="msg">Un mensaje para {eventName}</Label>
                   <Textarea
                     id="msg"
-                    placeholder={`Write something sweet for ${eventName}...`}
+                    placeholder={`Escribe algo bonito para ${eventName}...`}
                     className="mt-1 min-h-[100px]"
                     maxLength={300}
                     {...register("msg")}
@@ -299,8 +299,8 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium">Make it public?</p>
-                    <p className="text-xs text-muted-foreground">Show on the site</p>
+                    <p className="text-sm font-medium">¿Hacerlo público?</p>
+                    <p className="text-xs text-muted-foreground">Mostrar en el sitio</p>
                   </div>
                   <Switch
                     checked={watch("is_public")}
@@ -314,7 +314,7 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
                   size="lg"
                   disabled={submitting}
                 >
-                  {submitting ? "Sending..." : "Submit RSVP 🎊"}
+                  {submitting ? "Enviando..." : "Enviar Confirmación 🎊"}
                 </Button>
 
                 <Button
@@ -324,7 +324,7 @@ export default function RSVPModal({ open, onClose, eventName }: RSVPModalProps) 
                   className="w-full"
                   onClick={() => setStep(2)}
                 >
-                  ← Back
+                  ← Atrás
                 </Button>
               </div>
             )}
@@ -382,15 +382,15 @@ function ThankYou({
   return (
     <div className="text-center py-6 space-y-4">
       <div className="text-6xl animate-bounce">🎊</div>
-      <h2 className="font-script text-5xl text-primary">Thank You!</h2>
+      <h2 className="font-script text-5xl text-primary">¡Gracias!</h2>
       <p className="font-display text-lg text-foreground/80">
-        We can't wait to celebrate with you!
+        ¡No podemos esperar para celebrar contigo!
       </p>
       <p className="text-muted-foreground text-sm">
-        Returning to the page in {countdown}s...
+        Regresando a la página en {countdown}s...
       </p>
       <Button variant="outline" size="sm" onClick={onClose}>
-        Close
+        Cerrar
       </Button>
     </div>
   );

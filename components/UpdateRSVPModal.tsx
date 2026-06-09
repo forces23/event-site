@@ -23,10 +23,10 @@ import type { RsvpDocument } from "@/types";
 
 const updateSchema = z
   .object({
-    name: z.string().min(1, "Full name is required"),
-    email: z.string().email("Invalid email").or(z.literal("")).optional(),
+    name: z.string().min(1, "El nombre es obligatorio"),
+    email: z.string().email("Correo inválido").or(z.literal("")).optional(),
     phone: z.string().optional(),
-    relationship: z.string().min(1, "Required"),
+    relationship: z.string().min(1, "Obligatorio"),
     status: z.enum(["attending", "declined"]),
     total_adults: z.number().min(1).max(20),
     total_kids: z.number().min(0).max(20),
@@ -35,7 +35,7 @@ const updateSchema = z
   })
   .superRefine((d, ctx) => {
     if (!d.email && !d.phone?.trim()) {
-      ctx.addIssue({ code: "custom", path: ["email"], message: "Email or phone is required" });
+      ctx.addIssue({ code: "custom", path: ["email"], message: "Se requiere correo o teléfono" });
     }
   });
 
@@ -74,7 +74,7 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
 
   const handleLookup = async () => {
     if (!lookupValue.trim()) {
-      setLookupError("Please enter your email or phone number.");
+      setLookupError("Ingresa tu correo o teléfono.");
       return;
     }
     setLooking(true);
@@ -100,7 +100,7 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
       const msg =
         axios.isAxiosError(err) && err.response?.data?.error
           ? err.response.data.error
-          : "Not found. Please check your email or phone.";
+          : "No encontrado. Verifica tu correo o teléfono.";
       setLookupError(msg);
     } finally {
       setLooking(false);
@@ -113,13 +113,13 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
     try {
       await axios.patch(`/api/rsvp/${foundRsvp._id}`, data);
       setDone(true);
-      toast.success("Your RSVP has been updated!");
+      toast.success("¡Tu confirmación ha sido actualizada!");
       setTimeout(handleClose, 2000);
     } catch (err: unknown) {
       const msg =
         axios.isAxiosError(err) && err.response?.data?.error
           ? err.response.data.error
-          : "Update failed. Please try again.";
+          : "La actualización falló. Inténtalo de nuevo.";
       toast.error(msg);
     } finally {
       setUpdating(false);
@@ -132,20 +132,20 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
         {done ? (
           <div className="text-center py-6 space-y-3">
             <div className="text-5xl">✅</div>
-            <h2 className="font-display text-xl font-semibold">RSVP Updated!</h2>
-            <p className="text-muted-foreground text-sm">Closing in a moment...</p>
+            <h2 className="font-display text-xl font-semibold">¡Confirmación Actualizada!</h2>
+            <p className="text-muted-foreground text-sm">Cerrando en un momento...</p>
           </div>
         ) : !foundRsvp ? (
           /* Lookup step */
           <div className="space-y-4">
             <DialogHeader>
-              <DialogTitle className="font-display text-xl">Update Your RSVP</DialogTitle>
+              <DialogTitle className="font-display text-xl">Actualiza tu Confirmación</DialogTitle>
               <DialogDescription>
-                Enter the email or phone number you used when RSVPing.
+                Ingresa el correo o teléfono que usaste al confirmar.
               </DialogDescription>
             </DialogHeader>
             <Input
-              placeholder="Email or phone number"
+              placeholder="Correo o teléfono"
               value={lookupValue}
               onChange={(e) => setLookupValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLookup()}
@@ -154,44 +154,44 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
               <p className="text-destructive text-sm">{lookupError}</p>
             )}
             <Button className="w-full" onClick={handleLookup} disabled={looking}>
-              {looking ? "Searching..." : "Find my RSVP →"}
+              {looking ? "Buscando..." : "Buscar mi confirmación →"}
             </Button>
           </div>
         ) : (
           /* Edit step */
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
             <DialogHeader>
-              <DialogTitle className="font-display text-xl">Edit Your RSVP</DialogTitle>
+              <DialogTitle className="font-display text-xl">Edita tu Confirmación</DialogTitle>
             </DialogHeader>
 
             <div>
-              <Label>Full Name</Label>
+              <Label>Nombre Completo</Label>
               <Input className="mt-1" {...register("name")} />
               {errors.name && <p className="text-destructive text-xs mt-1">{errors.name.message}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Email</Label>
+                <Label>Correo</Label>
                 <Input type="email" className="mt-1" {...register("email")} />
               </div>
               <div>
-                <Label>Phone</Label>
+                <Label>Teléfono</Label>
                 <Input type="tel" className="mt-1" {...register("phone")} />
               </div>
             </div>
             {errors.email && <p className="text-destructive text-xs -mt-2">{errors.email.message}</p>}
 
             <div>
-              <Label>Relationship</Label>
+              <Label>Parentesco</Label>
               <select
                 className="mt-1 flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 {...register("relationship")}
               >
-                <option value="family">Family</option>
-                <option value="friend">Friend</option>
-                <option value="coworker">Coworker</option>
-                <option value="other">Other</option>
+                <option value="family">Familia</option>
+                <option value="friend">Amigo/a</option>
+                <option value="coworker">Compañero/a de trabajo</option>
+                <option value="other">Otro</option>
               </select>
             </div>
 
@@ -203,7 +203,7 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
                   status === "attending" ? "border-primary bg-primary/10" : "border-border"
                 }`}
               >
-                🎉 Attending
+                🎉 Asistiré
               </button>
               <button
                 type="button"
@@ -212,14 +212,14 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
                   status === "declined" ? "border-destructive/50 bg-destructive/5" : "border-border"
                 }`}
               >
-                💌 Can't make it
+                💌 No podré
               </button>
             </div>
 
             {status === "attending" && (
               <div className="space-y-3 p-4 bg-muted rounded-xl">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Adults</span>
+                  <span className="text-sm">Adultos</span>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => setValue("total_adults", Math.max(1, totalAdults - 1))}
                       className="w-7 h-7 rounded-full border flex items-center justify-center">
@@ -233,7 +233,7 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Kids</span>
+                  <span className="text-sm">Niños</span>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => setValue("total_kids", Math.max(0, totalKids - 1))}
                       className="w-7 h-7 rounded-full border flex items-center justify-center">
@@ -250,18 +250,18 @@ export default function UpdateRSVPModal({ open, onClose, eventName }: UpdateRSVP
             )}
 
             <div>
-              <Label>Message for {eventName}</Label>
+              <Label>Mensaje para {eventName}</Label>
               <Textarea className="mt-1" maxLength={300} {...register("msg")} />
               <p className="text-xs text-muted-foreground text-right mt-1">{msgValue.length}/300</p>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm">Make message public?</span>
+              <span className="text-sm">¿Hacer público el mensaje?</span>
               <Switch checked={watch("is_public")} onCheckedChange={(v) => setValue("is_public", v)} />
             </div>
 
             <Button type="submit" className="w-full" size="lg" disabled={updating}>
-              {updating ? "Updating..." : "Update RSVP"}
+              {updating ? "Actualizando..." : "Actualizar Confirmación"}
             </Button>
           </form>
         )}

@@ -18,6 +18,31 @@ export interface EventTheme {
   scriptFont: string;
 }
 
+export interface VenueInfo {
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  mapsQuery: string;
+  embedMap: boolean;
+}
+
+// A timed part of the day at a specific venue, e.g. the Misa or the Recepción.
+export interface EventPart {
+  label: string;   // e.g. "Misa", "Recepción"
+  icon: string;    
+  time: string;    // ISO datetime
+  venue: VenueInfo;
+}
+
+// The places/parts of the celebration, in order.
+export interface EventLocations {
+  // Optional ceremony (e.g. the Misa) that precedes the reception.
+  ceremony?: EventPart | null;
+  // The reception (always present).
+  reception: EventPart;
+}
+
 export interface EventConfig {
   id: string;
   name: string;
@@ -25,13 +50,7 @@ export interface EventConfig {
   date: string;
   endTime: string;
   rsvpBy: string;
-  venue: {
-    name: string;
-    address: string;
-    lat: number;
-    lng: number;
-    mapsQuery: string;
-  };
+  locations: EventLocations;
   theme: EventTheme;
   music: string;
   heroPhoto: string | null;
@@ -41,6 +60,12 @@ export interface EventConfig {
   chambelanes: CourtMember[];
   dresscode: string;
   registry: string;
+  // Plain-text gift instructions shown instead of a registry link,
+  // e.g. "Lluvia de sobres". Takes precedence over `registry` when set.
+  giftNote?: string | null;
+  // English wording shown in place of `giftNote` when a guest uses the
+  // browser's built-in translation (avoids a literal mistranslation).
+  giftNoteEn?: string | null;
   herGallery: string[];
 }
 

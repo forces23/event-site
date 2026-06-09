@@ -33,9 +33,9 @@ export default function DirectionsModal({
           <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
             <Navigation className="w-6 h-6 text-primary" />
           </div>
-          <DialogTitle className="font-display text-xl">Get Directions</DialogTitle>
+          <DialogTitle className="font-display text-xl">Cómo Llegar</DialogTitle>
           <DialogDescription className="text-sm">
-            Choose your preferred maps app
+            Elige tu aplicación de mapas
           </DialogDescription>
         </DialogHeader>
 
