@@ -8,6 +8,7 @@ export const R2_BUCKET = "quince-uploads";
 // ─────────────────────────────────────────────────────────────────────────────
 export const EVENT: EventConfig = {
   id: "ciarah_quince_2026",
+  storagePrefix: "ciarah-hernandez-quince-26",
   name: "Ciarah Hernandez",
   fullTitle: "Mis 15 Años",
   

@@ -45,6 +45,10 @@ export interface EventLocations {
 
 export interface EventConfig {
   id: string;
+  // R2 folder (key prefix) for this event's uploads, e.g. "ciarah-hernandez-quince-26".
+  // Guest photos go under <storagePrefix>/guest-gallery/, her photos under
+  // <storagePrefix>/her-gallery/.
+  storagePrefix: string;
   name: string;
   fullTitle: string;
   date: string;

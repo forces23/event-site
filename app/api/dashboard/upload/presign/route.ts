@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       await Promise.all(
         files.map(async (f) => {
           const ext = f.name.split(".").pop() ?? "jpg";
-          const key = `her/${EVENT.id}/${Date.now()}_${uuidv4()}.${ext}`;
+          const key = `${EVENT.storagePrefix}/her-gallery/${Date.now()}_${uuidv4()}.${ext}`;
           const presigned_url = await getPresignedPutUrl(key, f.type);
           return {
             presigned_url,

@@ -26,13 +26,6 @@ const USERS = [
     name: "Admin",
     role: "admin" as const,
   },
-  {
-    username: process.env.VIEWER_USERNAME,
-    email: process.env.VIEWER_EMAIL,
-    password: process.env.VIEWER_PASSWORD,
-    name: "Viewer",
-    role: "user" as const,   // Better Auth admin plugin uses "user" for non-admin roles
-  },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 
