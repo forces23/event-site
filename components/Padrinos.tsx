@@ -35,7 +35,7 @@ export default function Padrinos({ padrinos }: { padrinos: Padrino[] }) {
   return (
     <section ref={sectionRef} id="padrinos" className="section-padding bg-white">
       <div className="max-w-4xl mx-auto">
-        <div className="pad-header text-center mb-10">
+        {/* <div className="pad-header text-center mb-10">
           <p className="font-script text-4xl md:text-5xl text-primary mb-1" translate="no">
             <span className="i18n-es notranslate">Padrinos</span>
             <span className="i18n-en notranslate">Sponsors</span>
@@ -44,18 +44,18 @@ export default function Padrinos({ padrinos }: { padrinos: Padrino[] }) {
             Con cariño y gratitud
           </p>
           <div className="w-16 h-0.5 mx-auto mt-4 bg-accent/40" />
-        </div>
+        </div> */}
 
         <div className="flex flex-wrap justify-center gap-4">
           {padrinos.map((p, i) => (
             <div
               key={i}
-              className="pad-card w-[calc(50%-0.5rem)] md:w-52 p-5 rounded-2xl border border-border bg-background text-center hover:shadow-md transition-shadow"
+              className="flex flex-col pad-card w-[calc(50%-0.5rem)] p-5 rounded-2xl border border-border bg-background text-center hover:shadow-md transition-shadow"
             >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                 <span className="text-lg">💐</span>
               </div>
-              <p className="font-display font-semibold text-sm leading-snug">{p.name}</p>
+              <p className="font-script text-4xl md:text-5xl text-primary mb-1 flex-grow">{p.name}</p>
               <p className="text-xs text-accent mt-1 font-medium tracking-wide">{p.role}</p>
             </div>
           ))}

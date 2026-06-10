@@ -65,8 +65,8 @@ export const EVENT: EventConfig = {
 
   // Padrinos / Sponsors.
   padrinos: [
-    { name: "Aracey & Oscar Hernandez", role: "Padres" },
-    { name: "Faviola & Jorge Lopez", role: "Padrinos" },
+    { name: "Aracely & Oscar Hernandez", role: "Mis Padres" },
+    { name: "Faviola & Jorge\u2002Lopez", role: "Mis Padrinos" },
   ],
 
   damas: [],

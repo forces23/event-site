@@ -159,7 +159,7 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
         >
           <div className="absolute pointer-events-none" style={{ inset: 7, border: "0.5px solid rgba(201,168,76,0.38)", borderRadius: 4 }} />
           <p className="font-script text-center" style={{ fontSize: "2rem", color: "#C9A84C", lineHeight: 1.1 }}>
-            Estás Invitada
+            Estás Invitado
           </p>
           <div style={{ width: 60, height: 1, background: "#C9A84C", opacity: 0.45 }} />
           <p className="font-display text-center" style={{ fontSize: "0.7rem", color: "#7a5c2a", letterSpacing: "0.20em" }}>
