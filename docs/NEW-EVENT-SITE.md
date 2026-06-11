@@ -53,15 +53,15 @@ The whole site is driven by **one config object**: [`config/config.ts`](../confi
 
 ## 2. MongoDB — new database (same cluster)
 
-Each event gets its **own database** inside the shared `event-prod` cluster. This keeps
+Each event gets its **own database** inside the shared cluster. This keeps
 data **and logins** fully isolated (logins are **not** event-scoped in code, so separate
 DBs are what keeps them apart).
 
-1. **MongoDB Atlas** → cluster `event-prod`. You don't need to pre-create the DB —
+1. **MongoDB Atlas** → your cluster. You don't need to pre-create the DB —
    Mongo creates it on first write. (Optionally create it in Compass.)
 2. Build the connection string — same cluster/user, **new database name** in the path:
    ```
-   mongodb+srv://event_db_admin:PASSWORD@event-prod.xxxxx.mongodb.net/2026-ciarah-hernandez?appName=event-prod
+   mongodb+srv://<db_user>:<password>@<cluster>.xxxxx.mongodb.net/2026-ciarah-hernandez?appName=<cluster>
    ```
    - Change only the **database segment** (`/2026-ciarah-hernandez`).
    - URL-encode special characters in the password (`@`→`%40`, etc.).
