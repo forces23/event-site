@@ -101,14 +101,3 @@
     @apply py-16 md:py-24 px-4 md:px-8;
   }
 }
-
-/* ── Translation-aware copy ──────────────────────────────────────────────────
-   Chrome adds `translated-ltr` / `translated-rtl` to <html> when its built-in
-   translator is active. Use that to swap a Spanish phrase for hand-written
-   English instead of letting the machine produce a literal mistranslation.
-   Default (untranslated): show .i18n-es, hide .i18n-en. */
-.i18n-en { display: none; }
-html.translated-ltr .i18n-es,
-html.translated-rtl .i18n-es { display: none; }
-html.translated-ltr .i18n-en,
-html.translated-rtl .i18n-en { display: inline; }

@@ -46,16 +46,16 @@ export default function EventInfo({ event }: { event: EventConfig }) {
   const [updateOpen, setUpdateOpen] = useState(false);
 
   const eventDate = new Date(event.date);
-  const formattedDate = eventDate.toLocaleDateString("es-MX", {
+  const formattedDate = eventDate.toLocaleDateString("en-US", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
-  const rsvpDeadline = new Date(event.rsvpBy).toLocaleDateString("es-MX", {
+  const rsvpDeadline = new Date(event.rsvpBy).toLocaleDateString("en-US", {
     day: "numeric", month: "long", year: "numeric",
   });
   const deadlinePassed = isDeadlinePassed(event.rsvpBy);
 
-  // The Misa (if any) + the Recepción, rendered in order.
+  // The ceremony (if any) + the reception, rendered in order.
   const parts: EventPart[] = [
     ...(event.locations.ceremony ? [event.locations.ceremony] : []),
     event.locations.reception,
@@ -120,8 +120,8 @@ export default function EventInfo({ event }: { event: EventConfig }) {
         <div className="max-w-3xl mx-auto space-y-12">
           {/* Section header */}
           <div className="ei-header text-center">
-            <p className="font-script text-4xl md:text-5xl text-primary mb-2">Acompáñanos</p>
-            <h2 className="font-display text-2xl md:text-3xl font-semibold">Detalles del Evento</h2>
+            <p className="font-script text-4xl md:text-5xl text-primary mb-2">Join us</p>
+            <h2 className="font-display text-2xl md:text-3xl font-semibold">Event Details</h2>
             <div
               className="w-16 h-0.5 mx-auto mt-4"
               style={{ background: `hsl(${event.theme.accentColorHsl})` }}
@@ -131,52 +131,49 @@ export default function EventInfo({ event }: { event: EventConfig }) {
           {/* Countdown */}
           <div className="ei-countdown text-center space-y-3">
             <p className="text-muted-foreground text-sm tracking-widest uppercase">
-              Cuenta regresiva para el gran día
+              Counting down to the big day
             </p>
             <Countdown targetDate={event.date} />
           </div>
 
-          {/* Date */}
-          <div className="ei-time-card flex items-start gap-3 p-5 rounded-2xl bg-white shadow-sm border border-border">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <CalendarDays className="w-5 h-5 text-primary" />
+          {/* Schedule strip — Date · Ceremony · Reception · RSVP, side by side */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {/* Date */}
+            <div className="ei-time-card w-full sm:w-[calc(33.333%-0.667rem)] max-w-xs flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-center mb-4 text-primary h-9">
+                <CalendarDays className="w-9 h-9" />
+              </div>
+              <p className="font-script text-3xl text-primary mt-1">Date</p>
+              <p className="font-display text-3xl md:text-4xl font-semibold capitalize mt-1">{formattedDate}</p>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Fecha</p>
-              <p className="font-display font-semibold capitalize">{formattedDate}</p>
-            </div>
-          </div>
-
-          {/* Schedule strip — Misa · Recepción · RSVP, side by side */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {parts.map((part, i) => {
               const Icon = PART_ICONS[part.icon] ?? MapPin;
               return (
                 <button
                   key={part.label}
                   onClick={() => setDirectionsVenue(part.venue)}
-                  className="ei-venue group flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow"
+                  className="ei-venue group w-full sm:w-[calc(33.333%-0.667rem)] max-w-xs flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-4 text-primary h-9">
                     <Icon className="w-9 h-9" />
                   </div>
-                  <p className="font-script text-2xl text-primary mt-1">{part.label}</p>
+                  <p className="font-script text-3xl text-primary mt-1">{part.label}</p>
                   <p className="font-display text-3xl md:text-4xl font-semibold">{fmtTime(part.time)}</p>
                   {i === lastIndex && (
-                    <p className="text-[11px] text-muted-foreground mt-0.5">hasta la Media Noche</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">until Midnight</p>
                   )}
                   <p className="font-display text-sm font-medium mt-3">{part.venue.name}</p>
                   <p className="text-xs text-muted-foreground">{part.venue.address}</p>
                   <span className="mt-auto pt-3 inline-flex items-center gap-1 text-xs text-primary group-hover:underline">
                     <Navigation className="w-3 h-3" />
-                    Cómo llegar
+                    Get Directions
                   </span>
                 </button>
               );
             })}
 
             {/* RSVP card */}
-            <div className="ei-venue flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow">
+            <div className="ei-venue w-full sm:w-[calc(33.333%-0.667rem)] max-w-xs flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow">
               <button
                 onClick={() => setRsvpOpen(true)}
                 disabled={deadlinePassed}
@@ -186,22 +183,22 @@ export default function EventInfo({ event }: { event: EventConfig }) {
                   <CheckCircle className="w-9 h-9" strokeWidth={1.25} />
                 </div>
                 <p className="font-script text-3xl text-primary leading-tight group-enabled:group-hover:underline">
-                  {deadlinePassed ? "RSVP cerrado" : "Confirmar asistencia"}
+                  {deadlinePassed ? "RSVP Closed" : "Confirm Attendance"}
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">
                   {deadlinePassed
-                    ? `La fecha límite fue el ${rsvpDeadline}`
-                    : `Antes del ${rsvpDeadline}`}
+                    ? `The deadline was ${rsvpDeadline}`
+                    : `By ${rsvpDeadline}`}
                 </p>
               </button>
 
               {/* Update an existing RSVP — within the card */}
               <div className="mt-auto pt-4">
                 <p className="text-xs text-muted-foreground mb-1">
-                  ¿Ya confirmaste? ¿Necesitas hacer un cambio?
+                  Already RSVP&apos;d? Need to make a change?
                 </p>
                 <Button variant="ghost" size="sm" onClick={() => setUpdateOpen(true)}>
-                  Actualizar Confirmación →
+                  Update RSVP →
                 </Button>
               </div>
             </div>
@@ -209,9 +206,9 @@ export default function EventInfo({ event }: { event: EventConfig }) {
 
           {/* Maps */}
           {event.locations.reception.venue.embedMap && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               {parts.map((part) => (
-                <div key={part.label} className="ei-venue space-y-2">
+                <div key={part.label} className="ei-venue space-y-2 flex-1 min-w-[280px] max-w-xl">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider text-center">
                     {part.label} · {part.venue.name}
                   </p>
@@ -222,36 +219,31 @@ export default function EventInfo({ event }: { event: EventConfig }) {
           )}
 
           {/* Dress Code & Gifts */}
-          <div className="grid sm:grid-cols-2 gap-6">
-            <div className="ei-detail-card p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
+          <div className="flex flex-wrap justify-center gap-6">
+            <div className="ei-detail-card flex-1 min-w-[260px] max-w-sm p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <Shirt className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-display text-lg font-semibold mb-2">Código de Vestimenta</h3>
+              <h3 className="font-display text-lg font-semibold mb-2">Dress Code</h3>
               <p className="text-muted-foreground">{event.dresscode}</p>
               <p className="text-sm text-muted-foreground mt-2">
-                Te invitamos a vestir formal y elegante.
+                Guests are encouraged to wear elegant and semi-formal attire.
               </p>
             </div>
 
             {wishlistEnabled && (event.giftNote || effectiveRegistryUrl) && (
-              <div className="ei-detail-card p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
+              <div className="ei-detail-card flex-1 min-w-[260px] max-w-sm p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
                 <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
                   <Gift className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="font-display text-lg font-semibold mb-2">Regalos</h3>
+                <h3 className="font-display text-lg font-semibold mb-2">Gifts</h3>
                 <p className="text-muted-foreground text-sm mb-4">
-                  Tu presencia es el mejor regalo.
+                  Your presence is the best gift of all!
                 </p>
                 {event.giftNote ? (
                   <p className="text-sm">
-                    <span className="text-muted-foreground">Forma de regalo: </span>
-                    <strong className="text-accent" translate="no">
-                      <span className="i18n-es notranslate">{event.giftNote}</span>
-                      {event.giftNoteEn && (
-                        <span className="i18n-en notranslate">{event.giftNoteEn}</span>
-                      )}
-                    </strong>
+                    <span className="text-muted-foreground">Gift preference: </span>
+                    <strong className="text-accent">{event.giftNote}</strong>
                   </p>
                 ) : (
                   <Button
@@ -261,7 +253,7 @@ export default function EventInfo({ event }: { event: EventConfig }) {
                     onClick={() => window.open(effectiveRegistryUrl, "_blank", "noopener,noreferrer")}
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Ver Lista de Regalos
+                    View Wishlist
                   </Button>
                 )}
               </div>

@@ -37,15 +37,15 @@ export default function Footer({ name }: FooterProps) {
       <div className="footer-inner max-w-xl mx-auto text-center space-y-8">
         {/* QR code section */}
         <div>
-          <p className="font-script text-3xl text-primary mb-2">Comparte tus fotos</p>
+          <p className="font-script text-3xl text-primary mb-2">Share your photos</p>
           <p className="text-sm text-muted-foreground mb-6">
-            Escanea el código QR para subir tus fotos y videos
+            Scan the QR code to upload your photos and videos
           </p>
 
           <div className="inline-block p-4 bg-white rounded-2xl shadow-md border border-border">
             <Image
               src="/qr-upload.png"
-              alt="Código QR para subir fotos"
+              alt="QR code to upload photos"
               width={180}
               height={180}
               className="rounded-lg"
@@ -58,7 +58,7 @@ export default function Footer({ name }: FooterProps) {
 
           <div className="mt-4">
             <Link href="/upload" className="text-sm text-primary hover:underline">
-              O toca aquí para subir →
+              Or tap here to upload →
             </Link>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function Footer({ name }: FooterProps) {
         <div>
           <p className="font-script text-2xl text-primary">{name}</p>
           <p className="text-xs text-muted-foreground mt-1 tracking-widest uppercase">
-            <span translate="no" className="notranslate">Quinceañera</span> 2026
+            Quinceañera 2026
           </p>
         </div>
 

@@ -62,8 +62,8 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
   // Tabs shown in the gallery sub-bar
   const firstName = event.name.split(" ")[0];
   const galleryTabs = [
-    ...(herGalleryEnabled ? [{ value: "her" as GalleryTab, label: `Galería de ${firstName}` }] : []),
-    { value: "party" as GalleryTab, label: "Galería de la Fiesta" },
+    ...(herGalleryEnabled ? [{ value: "her" as GalleryTab, label: `${firstName}'s Gallery` }] : []),
+    { value: "party" as GalleryTab, label: "Party Gallery" },
   ];
 
   return (
@@ -90,7 +90,7 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
                   : "hsl(var(--muted-foreground))",
               }}
             >
-              {tab === "details" ? "Detalles" : "Galería"}
+              {tab === "details" ? "Details" : "Gallery"}
 
               {mainTab === tab && (
                 <span
@@ -107,7 +107,7 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
       {mainTab === "details" && (
         <>
           <EventInfo event={event} />
-          {event.padrinos.length > 0 && <Padrinos padrinos={event.padrinos} />}
+          {event.padrinos  && <Padrinos padrinos={event.padrinos} />}
         </>
       )}
 

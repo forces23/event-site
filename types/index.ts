@@ -59,9 +59,9 @@ export interface EventConfig {
   music: string;
   heroPhoto: string | null;
   heroPhotoMobile: string | null;
-  padrinos: Padrino[];
-  damas: CourtMember[];
-  chambelanes: CourtMember[];
+  padrinos?: Padrino[];
+  damas?: CourtMember[];
+  chambelanes?: CourtMember[];
   dresscode: string;
   registry: string;
   // Plain-text gift instructions shown instead of a registry link,

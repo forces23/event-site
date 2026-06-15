@@ -24,11 +24,11 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: `${EVENT.name} — ${EVENT.fullTitle}`,
-  description: `Te invitamos a celebrar ${EVENT.fullTitle} de ${EVENT.name} el ${new Date(EVENT.date).toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}.`,
+  title: EVENT.fullTitle,
+  description: `You are cordially invited to ${EVENT.fullTitle} on ${new Date(EVENT.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}.`,
   openGraph: {
-    title: `${EVENT.name} — ${EVENT.fullTitle}`,
-    description: `¡Celebra el día especial de ${EVENT.name} con nosotros!`,
+    title: EVENT.fullTitle,
+    description: `Celebrate ${EVENT.name}'s special day with us!`,
     type: "website",
   },
 };
@@ -42,7 +42,7 @@ export default function RootLayout({
 
   return (
     <html
-      lang="es"
+      lang="en"
       className={`${montserrat.variable} ${playfair.variable} ${greatVibes.variable}`}
     >
       <head>

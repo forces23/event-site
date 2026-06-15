@@ -117,8 +117,8 @@ export default function GuestGallery({ eventId }: { eventId: string }) {
       <section ref={sectionRef} id="guest-gallery" className="section-padding bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="gg-header text-center mb-10">
-            <p className="font-script text-4xl md:text-5xl text-primary mb-1">Galería de Invitados</p>
-            <p className="text-muted-foreground text-sm tracking-wider uppercase">Capturado por ustedes</p>
+            <p className="font-script text-4xl md:text-5xl text-primary mb-1">Guest Gallery</p>
+            <p className="text-muted-foreground text-sm tracking-wider uppercase">Captured by you</p>
             <div className="w-16 h-0.5 mx-auto mt-4 bg-accent/40" />
           </div>
 
@@ -127,7 +127,7 @@ export default function GuestGallery({ eventId }: { eventId: string }) {
             <Link href="/upload">
               <Button variant="outline" className="gap-2">
                 <Upload className="w-4 h-4" />
-                Subir Fotos y Videos
+                Upload Photos &amp; Videos
               </Button>
             </Link>
           </div>
@@ -136,12 +136,12 @@ export default function GuestGallery({ eventId }: { eventId: string }) {
           {isLoading && photos.length === 0 ? (
             <div className="gg-grid flex flex-col items-center gap-3 py-16 text-muted-foreground">
               <RefreshCw className="w-8 h-8 animate-spin opacity-40" />
-              <p className="text-sm">Cargando fotos...</p>
+              <p className="text-sm">Loading photos...</p>
             </div>
           ) : photos.length === 0 ? (
             <div className="gg-grid flex flex-col items-center gap-3 py-16 text-muted-foreground">
               <ImageIcon className="w-12 h-12 opacity-20" />
-              <p className="text-sm">Aún no hay fotos — ¡sé el primero en subir!</p>
+              <p className="text-sm">No photos yet — be the first to upload!</p>
             </div>
           ) : (
             <div className="gg-grid grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
@@ -157,8 +157,8 @@ export default function GuestGallery({ eventId }: { eventId: string }) {
 
           {lastFetched && (
             <p className="text-xs text-muted-foreground text-center mt-4">
-              Se actualiza cada 30 segundos · Última actualización{" "}
-              {lastFetched.toLocaleTimeString("es-MX")}
+              Auto-refreshes every 30 seconds · Last updated{" "}
+              {lastFetched.toLocaleTimeString()}
             </p>
           )}
         </div>
