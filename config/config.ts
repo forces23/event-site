@@ -78,7 +78,7 @@ export const EVENT: EventConfig = {
   //   { name: "Chambelán 7", photo: "/placeholders/chambelan.jpg" },
   // ],
 
-  dresscode: "Look your best!",
+  dresscode: "Look your best! All we ask is to not wear Pink and Gold that is reserved for the quinceañera.",
 
   // Replace with the real registry URL when ready.
   registry: "https://www.amazon.com/hz/wishlist/ls/PLACEHOLDER",
