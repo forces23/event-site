@@ -14,7 +14,7 @@ export const EVENT: EventConfig = {
 
   date: "2026-07-24T18:00:00", // July 24, 2026 at 6:00 PM local time
   endTime: "2026-07-25T00:00:00",
-  rsvpBy: "2026-07-17T23:59:59", // Update once the RSVP deadline is decided
+  rsvpBy: "2026-07-16T23:59:59", // Update once the RSVP deadline is decided
 
   // Single venue — reception only (no separate ceremony).
   locations: {
