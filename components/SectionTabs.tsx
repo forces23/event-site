@@ -71,8 +71,9 @@ export default function SectionTabs({ event, initialTab = "details", initialGall
       {/* ── Main tab bar — sticks to top once hero scrolls past ──────────── */}
       <div
         ref={barRef}
-        className="sticky top-0 z-40 border-b border-border"
+        className="sticky z-40 border-b border-border"
         style={{
+          top: "var(--announcement-height, 0px)",
           background: "rgba(253,252,248,0.96)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",

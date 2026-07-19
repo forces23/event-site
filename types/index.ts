@@ -20,27 +20,32 @@ export interface EventTheme {
 
 export interface VenueInfo {
   name: string;
-  address: string;
-  lat: number;
-  lng: number;
-  mapsQuery: string;
-  embedMap: boolean;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  mapsQuery?: string;
+  embedMap?: boolean;
 }
+
+// A venue with full address/map details — required for parts that support
+// "Get Directions" and the map embed (currently just the reception).
+export type FullVenueInfo = VenueInfo &
+  Required<Pick<VenueInfo, "address" | "lat" | "lng" | "mapsQuery" | "embedMap">>;
 
 // A timed part of the day at a specific venue, e.g. the Misa or the Recepción.
 export interface EventPart {
   label: string;   // e.g. "Misa", "Recepción"
   icon: string;    
-  time: string;    // ISO datetime
-  venue: VenueInfo;
+  time?: string;    // ISO datetime
+  endTime?: string;   // ISO datetime
+  venue?: VenueInfo;
 }
 
 // The places/parts of the celebration, in order.
 export interface EventLocations {
-  // Optional ceremony (e.g. the Misa) that precedes the reception.
-  ceremony?: EventPart | null;
-  // The reception (always present).
-  reception: EventPart;
+  ceremony?: EventPart | null; // Optional ceremony (e.g. the Misa) that precedes the reception.
+  reception: EventPart & { venue: FullVenueInfo }; // The reception (always present, always has a full venue).
+  dinner?: EventPart; // Optional dinner — its venue (if set) may just be a name, e.g. when it's held at the reception venue.
 }
 
 export interface EventConfig {
@@ -149,6 +154,19 @@ export interface PresignResponse {
   presigned_url: string;
   key: string;
   public_url: string;
+}
+
+// ─── Announcements ─────────────────────────────────────────────────────────────
+// "theme" pulls the color from EVENT.theme.primaryColor; the rest are fixed swatches.
+export type AnnouncementColor = "theme" | "red" | "blue" | "green" | "yellow";
+
+export interface PublicAnnouncement {
+  id: string;
+  title: string;
+  message: string;
+  color: AnnouncementColor;
+  active: boolean;
+  updatedAt: string;
 }
 
 // ─── Dashboard stats ─────────────────────────────────────────────────────────

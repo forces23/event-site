@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MapPin, CheckCircle, Navigation, CalendarDays, Shirt, Gift, ExternalLink } from "lucide-react";
+import { MapPin, CheckCircle, Navigation, CalendarDays, Shirt, Gift, ExternalLink, Utensils } from "lucide-react";
 import { PiChurchDuotone } from "react-icons/pi";
 
 
@@ -14,7 +14,12 @@ import UpdateRSVPModal from "./UpdateRSVPModal";
 import { isDeadlinePassed } from "@/lib/utils";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useSettingsStore } from "@/stores/settingsStore";
-import type { EventConfig, EventPart, VenueInfo } from "@/types";
+import type { EventConfig, EventPart, FullVenueInfo, VenueInfo } from "@/types";
+
+// A part whose venue has enough detail to support "Get Directions" and the map embed.
+function hasDirections(part: EventPart): part is EventPart & { venue: FullVenueInfo } {
+  return Boolean(part.venue?.address && part.venue?.mapsQuery);
+}
 
 const fmtTime = (iso: string) => {
   const d = new Date(iso);
@@ -28,6 +33,7 @@ const fmtTime = (iso: string) => {
 const PART_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   church: PiChurchDuotone,
   pin: MapPin,
+  cutlery: Utensils,
 };
 
 export default function EventInfo({ event }: { event: EventConfig }) {
@@ -55,12 +61,42 @@ export default function EventInfo({ event }: { event: EventConfig }) {
   });
   const deadlinePassed = isDeadlinePassed(event.rsvpBy);
 
-  // The ceremony (if any) + the reception, rendered in order.
+  // The ceremony (if any) + the reception + the dinner (if any), rendered in order.
   const parts: EventPart[] = [
     ...(event.locations.ceremony ? [event.locations.ceremony] : []),
     event.locations.reception,
+    ...(event.locations.dinner ? [event.locations.dinner] : []),
   ];
-  const lastIndex = parts.length - 1;
+  const venueParts = parts.filter(hasDirections);
+  const giftCardVisible = wishlistEnabled && Boolean(event.giftNote || effectiveRegistryUrl);
+
+  // Shared "fill the last row" layout: cards sit `perRow`-per-row on a
+  // 6-column grid (perRow 3 → 2 cols each, perRow 2 → 3 cols each). When the
+  // last row has fewer than `perRow` cards, they grow to split that row's
+  // width evenly (or take the whole row when there's only one) instead of
+  // leaving a gap.
+  const fillLastRowSpan = (totalCount: number, index: number, perRow: 2 | 3) => {
+    const lastRowCount = totalCount % perRow || perRow;
+    const lastRowStart = totalCount - lastRowCount;
+    const inLastRow = index >= lastRowStart;
+    if (!inLastRow) return perRow === 3 ? "sm:col-span-2" : "sm:col-span-3";
+    switch (lastRowCount) {
+      case 1:
+        return "sm:col-span-6";
+      case 2:
+        return "sm:col-span-3";
+      default:
+        return "sm:col-span-2";
+    }
+  };
+
+  const scheduleCardCount = parts.length + 2;
+  const gridSpan = (index: number) => fillLastRowSpan(scheduleCardCount, index, 3);
+
+  const detailCardCount = giftCardVisible ? 2 : 1;
+  const detailGridSpan = (index: number) => fillLastRowSpan(detailCardCount, index, 3);
+
+  const mapGridSpan = (index: number) => fillLastRowSpan(venueParts.length, index, 2);
 
   useGSAP(
     () => {
@@ -137,9 +173,9 @@ export default function EventInfo({ event }: { event: EventConfig }) {
           </div>
 
           {/* Schedule strip — Date · Ceremony · Reception · RSVP, side by side */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
             {/* Date */}
-            <div className="ei-time-card w-full sm:w-[calc(33.333%-0.667rem)] max-w-xs flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow">
+            <div className={`ei-time-card ${gridSpan(0)} flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow`}>
               <div className="flex items-center justify-center mb-4 text-primary h-9">
                 <CalendarDays className="w-9 h-9" />
               </div>
@@ -148,18 +184,47 @@ export default function EventInfo({ event }: { event: EventConfig }) {
             </div>
             {parts.map((part, i) => {
               const Icon = PART_ICONS[part.icon] ?? MapPin;
+              const isReception = part === event.locations.reception;
+              const timeLabel =
+                part.time && part.endTime
+                  ? `${fmtTime(part.time)} – ${fmtTime(part.endTime)}`
+                  : part.time
+                  ? fmtTime(part.time)
+                  : null;
+
+              if (!hasDirections(part)) {
+                // No full venue detail (e.g. dinner, which just names the venue
+                // it's held at) — show it as an informational card without
+                // directions/maps.
+                return (
+                  <div
+                    key={part.label}
+                    className={`ei-venue ${gridSpan(i + 1)} flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border`}
+                  >
+                    <div className="flex items-center justify-center gap-1.5 mb-4 text-primary h-9">
+                      <Icon className="w-9 h-9" />
+                    </div>
+                    <p className="font-script text-3xl text-primary mt-1">{part.label}</p>
+                    <p className="font-display text-3xl md:text-4xl font-semibold">{timeLabel}</p>
+                    {part.venue?.name && (
+                      <p className="text-xs text-muted-foreground mt-3">at {part.venue.name}</p>
+                    )}
+                  </div>
+                );
+              }
+
               return (
                 <button
                   key={part.label}
                   onClick={() => setDirectionsVenue(part.venue)}
-                  className="ei-venue group w-full sm:w-[calc(33.333%-0.667rem)] max-w-xs flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow"
+                  className={`ei-venue group ${gridSpan(i + 1)} flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow`}
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-4 text-primary h-9">
                     <Icon className="w-9 h-9" />
                   </div>
                   <p className="font-script text-3xl text-primary mt-1">{part.label}</p>
-                  <p className="font-display text-3xl md:text-4xl font-semibold">{fmtTime(part.time)}</p>
-                  {i === lastIndex && (
+                  <p className="font-display text-3xl md:text-4xl font-semibold">{timeLabel}</p>
+                  {isReception && (
                     <p className="text-[11px] text-muted-foreground mt-0.5">until Midnight</p>
                   )}
                   <p className="font-display text-sm font-medium mt-3">{part.venue.name}</p>
@@ -173,7 +238,7 @@ export default function EventInfo({ event }: { event: EventConfig }) {
             })}
 
             {/* RSVP card */}
-            <div className="ei-venue w-full sm:w-[calc(33.333%-0.667rem)] max-w-xs flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow">
+            <div className={`ei-venue ${gridSpan(parts.length + 1)} flex flex-col items-center text-center p-6 rounded-2xl bg-white shadow-sm border border-border hover:shadow-md transition-shadow`}>
               <button
                 onClick={() => setRsvpOpen(true)}
                 disabled={deadlinePassed}
@@ -206,9 +271,9 @@ export default function EventInfo({ event }: { event: EventConfig }) {
 
           {/* Maps */}
           {event.locations.reception.venue.embedMap && (
-            <div className="flex flex-wrap justify-center gap-4">
-              {parts.map((part) => (
-                <div key={part.label} className="ei-venue space-y-2 flex-1 min-w-[280px] max-w-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
+              {venueParts.map((part, i) => (
+                <div key={part.label} className={`ei-venue space-y-2 ${mapGridSpan(i)}`}>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider text-center">
                     {part.label} · {part.venue.name}
                   </p>
@@ -219,8 +284,8 @@ export default function EventInfo({ event }: { event: EventConfig }) {
           )}
 
           {/* Dress Code & Gifts */}
-          <div className="flex flex-wrap justify-center gap-6">
-            <div className="ei-detail-card flex-1 min-w-[260px] max-w-sm p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-6">
+            <div className={`ei-detail-card ${detailGridSpan(0)} p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow`}>
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <Shirt className="w-6 h-6 text-primary" />
               </div>
@@ -231,8 +296,8 @@ export default function EventInfo({ event }: { event: EventConfig }) {
               </p>
             </div>
 
-            {wishlistEnabled && (event.giftNote || effectiveRegistryUrl) && (
-              <div className="ei-detail-card flex-1 min-w-[260px] max-w-sm p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow">
+            {giftCardVisible && (
+              <div className={`ei-detail-card ${detailGridSpan(1)} p-6 rounded-2xl border border-border bg-white hover:shadow-md transition-shadow`}>
                 <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
                   <Gift className="w-6 h-6 text-accent" />
                 </div>

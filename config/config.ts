@@ -31,6 +31,15 @@ export const EVENT: EventConfig = {
         embedMap: true,
       },
     },
+    dinner: {
+      label: "Dinner",
+      icon: "cutlery",
+      time: "2026-07-24T18:45:00",
+      endTime: "2026-07-24T19:45:00",
+      venue: {
+        name: "La Roma Banquet Hall",
+      },
+    },
   },
 
   // Pink + gold — change these per sister.
@@ -54,8 +63,6 @@ export const EVENT: EventConfig = {
   //   { name: "[Family Name] Family", role: "Catering" },
   //   { name: "[Family Name] Family", role: "Photography" },
   //   { name: "[Family Name] Family", role: "Music & DJ" },
-  //   { name: "[Family Name] Family", role: "Venue" },
-  //   { name: "[Family Name] Family", role: "Cake" },
   // ],
 
   // damas: [
@@ -63,9 +70,6 @@ export const EVENT: EventConfig = {
   //   { name: "Dama 2", photo: "/placeholders/dama.jpg" },
   //   { name: "Dama 3", photo: "/placeholders/dama.jpg" },
   //   { name: "Dama 4", photo: "/placeholders/dama.jpg" },
-  //   { name: "Dama 5", photo: "/placeholders/dama.jpg" },
-  //   { name: "Dama 6", photo: "/placeholders/dama.jpg" },
-  //   { name: "Dama 7", photo: "/placeholders/dama.jpg" },
   // ],
 
   // chambelanes: [
@@ -73,9 +77,6 @@ export const EVENT: EventConfig = {
   //   { name: "Chambelán 2", photo: "/placeholders/chambelan.jpg" },
   //   { name: "Chambelán 3", photo: "/placeholders/chambelan.jpg" },
   //   { name: "Chambelán 4", photo: "/placeholders/chambelan.jpg" },
-  //   { name: "Chambelán 5", photo: "/placeholders/chambelan.jpg" },
-  //   { name: "Chambelán 6", photo: "/placeholders/chambelan.jpg" },
-  //   { name: "Chambelán 7", photo: "/placeholders/chambelan.jpg" },
   // ],
 
   dresscode: "Look your best! All we ask is to not wear Pink and Gold that is reserved for the quinceañera.",
