@@ -6,7 +6,10 @@ import { toast } from "sonner";
 import { Loader2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ANNOUNCEMENT_COLOR_CLASSES } from "@/components/AnnouncementBanner";
+import {
+  ANNOUNCEMENT_COLOR_CLASSES,
+  ANNOUNCEMENT_REFRESH_EVENT,
+} from "@/components/AnnouncementBanner";
 import type { AnnouncementColor } from "@/types";
 
 interface Announcement {
@@ -62,10 +65,14 @@ export default function AnnouncementPanel({ isAdmin }: AnnouncementPanelProps) {
     (titleDraft !== announcement.title ||
       messageDraft !== announcement.message ||
       colorDraft !== announcement.color);
-  const draftComplete = Boolean(titleDraft.trim() && messageDraft.trim());
+  const draftComplete = Boolean(messageDraft.trim());
 
   const getErrorMessage = (error: unknown, fallback: string) =>
     (error as ApiError)?.response?.data?.error ?? fallback;
+
+  const refreshLiveBanner = () => {
+    window.dispatchEvent(new Event(ANNOUNCEMENT_REFRESH_EVENT));
+  };
 
   const saveDraft = async () => {
     setSaving(true);
@@ -79,6 +86,7 @@ export default function AnnouncementPanel({ isAdmin }: AnnouncementPanelProps) {
       setTitleDraft(res.data.title);
       setMessageDraft(res.data.message);
       setColorDraft(res.data.color);
+      refreshLiveBanner();
       toast.success("Announcement saved.");
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to save announcement."));
@@ -94,6 +102,7 @@ export default function AnnouncementPanel({ isAdmin }: AnnouncementPanelProps) {
     try {
       const res = await axios.patch<Announcement>("/api/dashboard/announcements", { active: next });
       setAnnouncement(res.data);
+      refreshLiveBanner();
       toast.success(res.data.active
         ? "Announcement is now live on the site."
         : "Announcement hidden from guests.");
@@ -158,10 +167,9 @@ export default function AnnouncementPanel({ isAdmin }: AnnouncementPanelProps) {
       {/* Content form */}
       <div className="bg-white border border-border rounded-2xl p-5 space-y-4">
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Title</label>
+          <label className="text-sm font-medium">Title <span className="text-muted-foreground">(optional)</span></label>
           <input
             type="text"
-            required
             maxLength={MAX_TITLE_LENGTH}
             value={titleDraft}
             onChange={(e) => setTitleDraft(e.target.value)}

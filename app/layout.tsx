@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Great_Vibes, Playfair_Display, Montserrat } from "next/font/google";
 import { Toaster } from "sonner";
 import { EVENT } from "@/config/config";
-import AnnouncementBanner from "@/components/AnnouncementBanner";
+import AnnouncementBannerSlot from "@/components/AnnouncementBannerSlot";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -60,7 +60,7 @@ export default function RootLayout({
         `}</style>
       </head>
       <body className="font-sans min-h-screen">
-        <AnnouncementBanner />
+        <AnnouncementBannerSlot />
         {children}
         <Toaster position="top-center" richColors />
       </body>

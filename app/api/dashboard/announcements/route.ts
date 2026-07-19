@@ -96,13 +96,12 @@ export async function PATCH(req: NextRequest) {
     await connectDB();
 
     const current = await Announcement.collection.findOne({ event: EVENT.id });
-    const nextTitle = title ?? (current?.title as string | undefined) ?? "";
     const nextMessage = message ?? (current?.message as string | undefined) ?? "";
     const nextActive = body.active ?? (current?.active as boolean | undefined) ?? false;
 
-    if (nextActive && (!nextTitle || !nextMessage)) {
+    if (nextActive && !nextMessage) {
       return NextResponse.json(
-        { error: "Add both a title and message before publishing." },
+        { error: "Add a message before publishing." },
         { status: 400 },
       );
     }

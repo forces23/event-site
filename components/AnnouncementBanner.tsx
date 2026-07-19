@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import type { PublicAnnouncement, AnnouncementColor } from "@/types";
 
@@ -14,23 +14,34 @@ export const ANNOUNCEMENT_COLOR_CLASSES: Record<AnnouncementColor, string> = {
   yellow: "bg-yellow-400/75 text-gray-900",
 };
 
+export const ANNOUNCEMENT_REFRESH_EVENT = "announcement:refresh";
+
 export default function AnnouncementBanner() {
   const bannerRef = useRef<HTMLElement>(null);
   const [announcement, setAnnouncement] = useState<PublicAnnouncement | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => {
+  const loadAnnouncement = useCallback(() => {
     fetch("/api/announcements", { cache: "no-store" })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch announcement");
         return res.json();
       })
       .then((data: { announcement: PublicAnnouncement | null }) => {
-        if (!data.announcement) return;
         setAnnouncement(data.announcement);
+        if (data.announcement) setDismissed(false);
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    loadAnnouncement();
+  }, [loadAnnouncement]);
+
+  useEffect(() => {
+    window.addEventListener(ANNOUNCEMENT_REFRESH_EVENT, loadAnnouncement);
+    return () => window.removeEventListener(ANNOUNCEMENT_REFRESH_EVENT, loadAnnouncement);
+  }, [loadAnnouncement]);
 
   useEffect(() => {
     const root = document.documentElement;

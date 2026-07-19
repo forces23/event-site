@@ -2,7 +2,7 @@ import React from "react";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import AnnouncementBanner from "@/components/AnnouncementBanner";
+import AnnouncementBanner, { ANNOUNCEMENT_REFRESH_EVENT } from "@/components/AnnouncementBanner";
 import type { PublicAnnouncement } from "@/types";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean })
@@ -22,6 +22,17 @@ function mockAnnouncementFetch(value: PublicAnnouncement | null = announcement) 
     ok: true,
     json: async () => ({ announcement: value }),
   }));
+}
+
+function mockAnnouncementFetchSequence(...values: Array<PublicAnnouncement | null>) {
+  const fetchMock = vi.fn();
+  values.forEach((value) => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ announcement: value }),
+    });
+  });
+  vi.stubGlobal("fetch", fetchMock);
 }
 
 describe("AnnouncementBanner", () => {
@@ -88,5 +99,24 @@ describe("AnnouncementBanner", () => {
 
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(container.querySelector('[aria-label="Announcement"]')).not.toBeNull();
+  });
+
+  it("refreshes the announcement when the dashboard publishes an update", async () => {
+    const updatedAnnouncement: PublicAnnouncement = {
+      ...announcement,
+      message: "The south lot opens at 5 PM.",
+      updatedAt: "2026-07-19T21:00:00.000Z",
+    };
+    mockAnnouncementFetchSequence(announcement, updatedAnnouncement);
+    await renderBanner();
+
+    expect(container.textContent).toContain(announcement.message);
+
+    await act(async () => {
+      window.dispatchEvent(new Event(ANNOUNCEMENT_REFRESH_EVENT));
+    });
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(container.textContent).toContain(updatedAnnouncement.message);
   });
 });
