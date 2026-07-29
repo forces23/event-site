@@ -134,7 +134,7 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[300] flex flex-col items-center justify-center"
+      className="fixed inset-0 z-[500] flex flex-col items-center justify-center"
       style={{
         background:
           "linear-gradient(135deg, #fde8e0 0%, rgba(201,168,76,0.10) 40%, rgba(109,184,154,0.18) 100%)",
