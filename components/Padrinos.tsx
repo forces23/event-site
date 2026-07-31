@@ -36,12 +36,9 @@ export default function Padrinos({ padrinos }: { padrinos: Padrino[] }) {
     <section ref={sectionRef} id="padrinos" className="section-padding bg-white">
       <div className="max-w-4xl mx-auto">
         {/* <div className="pad-header text-center mb-10">
-          <p className="font-script text-4xl md:text-5xl text-primary mb-1" translate="no">
-            <span className="i18n-es notranslate">Padrinos</span>
-            <span className="i18n-en notranslate">Sponsors</span>
-          </p>
+          <p className="font-script text-4xl md:text-5xl text-primary mb-1">Padrinos</p>
           <p className="text-muted-foreground text-sm tracking-wider uppercase">
-            Con cariño y gratitud
+            With gratitude to our sponsors
           </p>
           <div className="w-16 h-0.5 mx-auto mt-4 bg-accent/40" />
         </div> */}

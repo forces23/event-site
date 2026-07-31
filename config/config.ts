@@ -4,52 +4,45 @@ import type { EventConfig } from "@/types";
 export const R2_BUCKET = "quince-uploads";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EVENT — Ciarah Hernandez · Mis 15 Años · 8 de agosto, 2026
+// EVENT — Alexa Hernandez · Alexa's Quinceañera · July 24, 2026
 // ─────────────────────────────────────────────────────────────────────────────
 export const EVENT: EventConfig = {
-  id: "ciarah_quince_2026",
-  storagePrefix: "ciarah-hernandez-quince-26",
-  name: "Ciarah Hernandez",
-  fullTitle: "Mis 15 Años",
-  
-  date: "2026-08-08T16:00:00", // Saturday, August 8, 2026 — Misa at 4:00 PM (the day starts here).
-  endTime: "2026-08-09T00:00:00", // "Media Noche" — the celebration runs until midnight.
-  rsvpBy: "2026-07-18T23:59:59", // "Confirmar asistencia antes del 18 de Julio, 2026"
+  id: "alexa_quince_2026",
+  storagePrefix: "alexa", // matches the existing quince-uploads/alexa/ folder
+  name: "Alexa Hernandez",
+  fullTitle: "Alexa's Quinceañera",
 
+  date: "2026-07-24T18:00:00", // July 24, 2026 at 6:00 PM local time
+  endTime: "2026-07-25T00:00:00",
+  rsvpBy: "2026-07-16T23:59:59", // Update once the RSVP deadline is decided
+
+  // Single venue — reception only (no separate ceremony).
   locations: {
-    // Misa — 4:00 PM
-    ceremony: {
-      label: "Misa",
-      icon: "church",
-      time: "2026-08-08T16:00:00",
+    reception: {
+      label: "Reception",
+      icon: "pin",
+      time: "2026-07-24T18:00:00",
       venue: {
-        name: "Most Holy Trinity Church",
-        address: "1050 Porter St, Detroit, MI 48226",
-        // Approximate — the map embeds + directions are driven by the address.
-        lat: 42.330080635541336,
-        lng: -83.05981264630799,
-        mapsQuery: "Most Holy Trinity Church, 1050 Porter St, Detroit, MI 48226",
-        embedMap: false,
+        name: "La Roma Banquet Hall",
+        address: "32550 Cherry Hill Rd, Garden City, MI 48135",
+        lat: 42.31096285967381,
+        lng: -83.3617871282617,
+        mapsQuery: "La Roma Banquet Hall, 32550 Cherry Hill Rd, Garden City, MI 48135",
+        embedMap: true,
       },
     },
-    // Recepción — 5:00 PM
-    reception: {
-      label: "Recepción",
-      icon: "pin",
-      time: "2026-08-08T17:00:00",
+    dinner: {
+      label: "Dinner",
+      icon: "cutlery",
+      time: "2026-07-24T18:45:00",
+      endTime: "2026-07-24T19:45:00",
       venue: {
-        name: "The Lincoln Manor",
-        address: "25160 Outer Dr, Lincoln Park, MI 48146",
-        // Approximate — the map embeds + directions are driven by the address.
-        lat: 42.268294316491335,
-        lng: -83.17900513039932,
-        mapsQuery: "The Lincoln Manor, 25160 Outer Dr, Lincoln Park, MI 48146",
-        embedMap: true,
+        name: "La Roma Banquet Hall",
       },
     },
   },
 
-  // Look & Feel — pink + gold.
+  // Pink + gold — change these per sister.
   theme: {
     primaryColor: "#e07898",
     primaryColorHsl: "343 65% 68%",
@@ -59,24 +52,45 @@ export const EVENT: EventConfig = {
     scriptFont: "Great Vibes",
   },
 
-  music: "", // No song.
-  heroPhoto: "/photos/background-pink-gold-floral.png",
-  heroPhotoMobile: "/photos/background-pink-gold-floral-mobile.png",
+  // Drop the MP3 in public/music/ and update this path.
+  music: "/music/song.mp3",
 
-  // Padrinos / Sponsors.
-  padrinos: [
-    { name: "Aracely & Oscar Hernandez", role: "Mis Padres" },
-    { name: "Faviola & Jorge\u2002Lopez", role: "Mis Padrinos" },
+  heroPhoto: "/photos/floral-1.png",
+  heroPhotoMobile: "/photos/floral-mobile.png",
+
+  // padrinos: [
+  //   { name: "[Family Name] Family", role: "Florals" },
+  //   { name: "[Family Name] Family", role: "Catering" },
+  //   { name: "[Family Name] Family", role: "Photography" },
+  //   { name: "[Family Name] Family", role: "Music & DJ" },
+  // ],
+
+  // damas: [
+  //   { name: "Dama 1", photo: "/placeholders/dama.jpg" },
+  //   { name: "Dama 2", photo: "/placeholders/dama.jpg" },
+  //   { name: "Dama 3", photo: "/placeholders/dama.jpg" },
+  //   { name: "Dama 4", photo: "/placeholders/dama.jpg" },
+  // ],
+
+  // chambelanes: [
+  //   { name: "Chambelán 1", photo: "/placeholders/chambelan.jpg" },
+  //   { name: "Chambelán 2", photo: "/placeholders/chambelan.jpg" },
+  //   { name: "Chambelán 3", photo: "/placeholders/chambelan.jpg" },
+  //   { name: "Chambelán 4", photo: "/placeholders/chambelan.jpg" },
+  // ],
+
+  dresscode: "Look your best! All we ask is to not wear Pink and Gold that is reserved for the quinceañera.",
+
+  // Replace with the real registry URL when ready.
+  registry: "https://www.amazon.com/hz/wishlist/ls/PLACEHOLDER",
+
+  // Her curated gallery — add real photos here as they become available.
+  herGallery: [
+    "/placeholders/gallery-1.jpg",
+    "/placeholders/gallery-2.jpg",
+    "/placeholders/gallery-3.jpg",
+    "/placeholders/gallery-4.jpg",
+    "/placeholders/gallery-5.jpg",
+    "/placeholders/gallery-6.jpg",
   ],
-
-  damas: [],
-  chambelanes: [],
-
-  dresscode: "Formal",
-
-  registry: "",
-  giftNote: "Lluvia de sobres",
-  giftNoteEn: "Cash in an envelope",
-
-  herGallery: [],
 };

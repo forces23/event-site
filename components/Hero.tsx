@@ -64,7 +64,7 @@ export default function Hero({ event }: HeroProps) {
   const parallaxRef = useRef<HTMLDivElement>(null);
 
   const eventDate = new Date(event.date);
-  const month     = eventDate.toLocaleDateString("es-MX", { month: "long" }).toUpperCase();
+  const month     = eventDate.toLocaleDateString("en-US", { month: "long" }).toUpperCase();
   const day       = eventDate.getDate();
   const year      = eventDate.getFullYear();
 
@@ -246,7 +246,7 @@ export default function Hero({ event }: HeroProps) {
               : `hsl(${event.theme.accentColorHsl})`,
           }}
         >
-          <span translate="no" className="notranslate">Quinceañera</span>
+          Quinceañera
         </p>
 
         <h1
@@ -277,7 +277,7 @@ export default function Hero({ event }: HeroProps) {
                 : "hsl(var(--foreground) / 0.6)",
             }}
           >
-            {day} DE {month}, {year}
+            {month} {day}, {year}
           </p>
         </div>
       </div>

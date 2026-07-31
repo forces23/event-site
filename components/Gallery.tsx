@@ -80,10 +80,7 @@ export default function Gallery({ photos: configPhotos, name }: GalleryProps) {
         <div className="max-w-4xl mx-auto">
           <div className="gallery-header text-center mb-10">
             <p className="font-script text-4xl md:text-5xl text-primary mb-1">{name}</p>
-            <p className="text-muted-foreground text-sm tracking-wider uppercase" translate="no">
-              <span className="i18n-es notranslate">Su galería</span>
-              <span className="i18n-en notranslate">Her gallery</span>
-            </p>
+            <p className="text-muted-foreground text-sm tracking-wider uppercase">Her gallery</p>
             <div className="w-16 h-0.5 mx-auto mt-4 bg-accent/40" />
           </div>
 
@@ -101,7 +98,7 @@ export default function Gallery({ photos: configPhotos, name }: GalleryProps) {
                   {placeholder ? (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                       <ImageIcon className="w-8 h-8 text-primary/20" />
-                      <span className="text-xs text-muted-foreground">Próximamente</span>
+                      <span className="text-xs text-muted-foreground">Photo coming soon</span>
                     </div>
                   ) : (
                     <>

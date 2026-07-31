@@ -134,7 +134,7 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[300] flex flex-col items-center justify-center"
+      className="fixed inset-0 z-[500] flex flex-col items-center justify-center"
       style={{
         background:
           "linear-gradient(135deg, #fde8e0 0%, rgba(201,168,76,0.10) 40%, rgba(109,184,154,0.18) 100%)",
@@ -159,11 +159,11 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
         >
           <div className="absolute pointer-events-none" style={{ inset: 7, border: "0.5px solid rgba(201,168,76,0.38)", borderRadius: 4 }} />
           <p className="font-script text-center" style={{ fontSize: "2rem", color: "#C9A84C", lineHeight: 1.1 }}>
-            Estás Invitado
+            You&apos;re Invited
           </p>
           <div style={{ width: 60, height: 1, background: "#C9A84C", opacity: 0.45 }} />
           <p className="font-display text-center" style={{ fontSize: "0.7rem", color: "#7a5c2a", letterSpacing: "0.20em" }}>
-            <span translate="no" className="notranslate">MIS XV AÑOS</span>
+            QUINCE AÑOS
           </p>
         </div>
 
@@ -211,7 +211,7 @@ export default function EnvelopeIntro({ onComplete, onOpen, eventDate }: Envelop
       {waitingToOpen && (
         <div className="absolute bottom-[12%] left-0 right-0 flex flex-col items-center gap-2 animate-pulse pointer-events-none select-none">
           <p className="font-display text-sm tracking-widest uppercase" style={{ color: "#9a7a2a" }}>
-            Toca para abrir
+            Tap to open
           </p>
         </div>
       )}

@@ -7,7 +7,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import {
   LogOut, Download, RefreshCw, Home, Menu, X,
-  LayoutDashboard, ClipboardList, MessageSquare, Image, Settings,
+  LayoutDashboard, ClipboardList, MessageSquare, Image, Settings, Megaphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +16,7 @@ import RSVPTable from "@/components/dashboard/RSVPTable";
 import MessagesWall from "@/components/dashboard/MessagesWall";
 import PhotoGallery from "@/components/dashboard/PhotoGallery";
 import SettingsPanel from "@/components/dashboard/SettingsPanel";
+import AnnouncementPanel from "@/components/dashboard/AnnouncementPanel";
 import { EVENT } from "@/config/config";
 import type { RsvpDocument, PhotoDocument, DashboardStats } from "@/types";
 
@@ -24,14 +25,15 @@ interface DashboardData {
   rsvps: RsvpDocument[];
 }
 
-type Tab = "overview" | "rsvps" | "messages" | "photos" | "settings";
+type Tab = "overview" | "rsvps" | "messages" | "photos" | "announcements" | "settings";
 
 const TAB_ITEMS: { value: Tab; label: string; icon: React.ReactNode }[] = [
-  { value: "overview",  label: "Overview",  icon: <LayoutDashboard className="w-4 h-4" /> },
-  { value: "rsvps",     label: "RSVPs",     icon: <ClipboardList   className="w-4 h-4" /> },
-  { value: "messages",  label: "Messages",  icon: <MessageSquare   className="w-4 h-4" /> },
-  { value: "photos",    label: "Photos",    icon: <Image           className="w-4 h-4" /> },
-  { value: "settings",  label: "Settings",  icon: <Settings        className="w-4 h-4" /> },
+  { value: "overview",      label: "Overview",      icon: <LayoutDashboard className="w-4 h-4" /> },
+  { value: "rsvps",         label: "RSVPs",         icon: <ClipboardList   className="w-4 h-4" /> },
+  { value: "messages",      label: "Messages",      icon: <MessageSquare   className="w-4 h-4" /> },
+  { value: "photos",        label: "Photos",        icon: <Image           className="w-4 h-4" /> },
+  { value: "announcements", label: "Announcements", icon: <Megaphone       className="w-4 h-4" /> },
+  { value: "settings",      label: "Settings",      icon: <Settings        className="w-4 h-4" /> },
 ];
 
 export default function DashboardPage() {
@@ -46,7 +48,9 @@ export default function DashboardPage() {
   const [menuOpen, setMenuOpen]   = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const tabs = TAB_ITEMS;
+  const tabs = isAdmin
+    ? TAB_ITEMS
+    : TAB_ITEMS.filter((tab) => tab.value !== "announcements");
 
   const fetchData = async () => {
     setLoading(true);
@@ -129,7 +133,10 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-border">
+      <header
+        className="sticky z-40 bg-white/80 backdrop-blur-sm border-b border-border"
+        style={{ top: "var(--announcement-height, 0px)" }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div>
             <h1 className="font-display font-semibold text-lg">{EVENT.fullTitle}</h1>
@@ -251,6 +258,7 @@ export default function DashboardPage() {
               <TabsTrigger value="rsvps">📋 RSVPs</TabsTrigger>
               <TabsTrigger value="messages">💌 Messages</TabsTrigger>
               <TabsTrigger value="photos">📷 Photos</TabsTrigger>
+              {isAdmin && <TabsTrigger value="announcements">📣 Announcements</TabsTrigger>}
               <TabsTrigger value="settings">⚙️ Settings</TabsTrigger>
             </TabsList>
 
@@ -280,6 +288,12 @@ export default function DashboardPage() {
             <TabsContent value="photos">
               <PhotoGallery photos={photos} isAdmin={isAdmin} onDelete={handlePhotoDelete} />
             </TabsContent>
+
+            {isAdmin && (
+              <TabsContent value="announcements">
+                <AnnouncementPanel isAdmin={isAdmin} />
+              </TabsContent>
+            )}
 
             <TabsContent value="settings">
               <SettingsPanel isAdmin={isAdmin} />
