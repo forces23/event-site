@@ -260,9 +260,16 @@ export default function EventInfo({ event }: { event: EventConfig }) {
               {/* Update an existing RSVP — within the card */}
               <div className="mt-auto pt-4">
                 <p className="text-xs text-muted-foreground mb-1">
-                  Already RSVP&apos;d? Need to make a change?
+                  {deadlinePassed
+                    ? `Updates closed as of ${rsvpDeadline}`
+                    : "Already RSVP’d? Need to make a change?"}
                 </p>
-                <Button variant="ghost" size="sm" onClick={() => setUpdateOpen(true)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setUpdateOpen(true)}
+                  disabled={deadlinePassed}
+                >
                   Update RSVP →
                 </Button>
               </div>
